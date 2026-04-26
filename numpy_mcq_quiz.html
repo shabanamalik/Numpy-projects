@@ -1,0 +1,292 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+#app{padding:1rem 0}
+.header{margin-bottom:1.5rem}
+.progress-bar-bg{background:var(--color-background-secondary);border-radius:999px;height:8px;margin:0.75rem 0}
+.progress-bar-fill{background:#7F77DD;height:8px;border-radius:999px;transition:width 0.4s}
+.stats{display:flex;gap:12px;margin-bottom:1rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.5rem 1rem;font-size:13px;color:var(--color-text-secondary);flex:1;text-align:center}
+.stat span{display:block;font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.q-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem}
+.q-meta{font-size:12px;color:var(--color-text-tertiary);margin-bottom:0.5rem;display:flex;gap:8px}
+.tag{background:var(--color-background-info);color:var(--color-text-info);padding:2px 8px;border-radius:999px;font-size:11px}
+.q-text{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.75rem;line-height:1.5}
+.code-block{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:0.75rem;font-family:var(--font-mono);font-size:13px;color:var(--color-text-primary);margin-bottom:1rem;white-space:pre-wrap;line-height:1.6}
+.options{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.opt{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:0.75rem 1rem;cursor:pointer;font-size:14px;color:var(--color-text-primary);background:var(--color-background-primary);text-align:left;transition:background 0.15s,border 0.15s;line-height:1.4}
+.opt:hover:not(.disabled){background:var(--color-background-secondary);border-color:var(--color-border-primary)}
+.opt.correct{background:#EAF3DE;border:1.5px solid #639922;color:#27500A}
+.opt.wrong{background:#FCEBEB;border:1.5px solid #A32D2D;color:#501313}
+.opt.reveal{background:#EAF3DE;border:1.5px solid #639922;color:#27500A}
+.opt.disabled{cursor:default}
+.explanation{background:var(--color-background-secondary);border-left:3px solid #7F77DD;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:0.75rem 1rem;font-size:13px;color:var(--color-text-primary);line-height:1.6;margin-bottom:1rem}
+.explanation strong{color:#3C3489}
+.explanation code{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;padding:1px 5px;font-family:var(--font-mono);font-size:12px}
+.nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:0.5rem 1rem;cursor:pointer;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.btn:hover{background:var(--color-background-secondary)}
+.btn.primary{background:#7F77DD;border-color:#7F77DD;color:#fff}
+.btn.primary:hover{background:#534AB7}
+.q-counter{font-size:13px;color:var(--color-text-secondary);margin-left:auto}
+.finish-card{text-align:center;padding:2rem;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)}
+.score-big{font-size:48px;font-weight:500;color:#7F77DD;margin:1rem 0}
+.score-msg{font-size:16px;color:var(--color-text-secondary);margin-bottom:1.5rem}
+.filter-bar{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.filter-btn{border:0.5px solid var(--color-border-secondary);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:12px;background:var(--color-background-primary);color:var(--color-text-secondary)}
+.filter-btn.active{background:#7F77DD;border-color:#7F77DD;color:#fff}
+</style>
+
+<div id="app">
+  <div class="header">
+    <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">NumPy MCQ Practice</div>
+    <div style="font-size:13px;color:var(--color-text-secondary)">AI/ML Engineer preparation — 110 questions</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar" style="width:0%"></div></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span id="s-done">0</span>answered</div>
+    <div class="stat"><span id="s-correct" style="color:#639922">0</span>correct</div>
+    <div class="stat"><span id="s-wrong" style="color:#A32D2D">0</span>wrong</div>
+    <div class="stat"><span id="s-pct">0%</span>score</div>
+  </div>
+  <div class="filter-bar" id="filter-bar"></div>
+  <div id="quiz-area"></div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  {t:"Array Creation",q:"Which function creates a 1D array from 0 to 9?",code:"import numpy as np\narr = np.???(10)\nprint(arr)",opts:["np.linspace(10)","np.arange(10)","np.zeros(10)","np.ones(10)"],ans:1,exp:"<strong>np.arange(10)</strong> generates values [0,1,2,...,9]. It works like Python's <code>range()</code> but returns an ndarray. <code>np.linspace</code> needs start,stop,num args. <code>np.zeros/ones</code> fill with 0s/1s."},
+  {t:"Array Creation",q:"What does np.zeros((3,4)) produce?",opts:["3 rows, 4 cols of ones","3 rows, 4 cols of zeros","4 rows, 3 cols of zeros","A 1D array of 12 zeros"],ans:1,exp:"<strong>np.zeros((3,4))</strong> creates a 2D array with shape (3,4) filled with 0.0. The tuple argument is the shape. Total elements = 3×4 = 12."},
+  {t:"Array Creation",q:"How do you create an identity matrix of size 4×4?",code:"np.???(4)",opts:["np.identity_matrix(4)","np.ones((4,4))","np.eye(4)","np.diag(4)"],ans:2,exp:"<strong>np.eye(4)</strong> returns a 4×4 identity matrix — 1s on diagonal, 0s elsewhere. This is heavily used in linear algebra operations in ML (e.g., initializing weight matrices, computing covariance)."},
+  {t:"Array Creation",q:"What does np.full((2,3), 7) return?",opts:["A 2×3 array of 0s","A 2×3 array of 7s","A 1D array [2,3,7]","Error"],ans:1,exp:"<strong>np.full(shape, fill_value)</strong> creates an array of given shape filled with a constant. <code>np.full((2,3), 7)</code> → [[7,7,7],[7,7,7]]. Useful for initializing bias arrays."},
+  {t:"Array Creation",q:"np.random.seed(42) is used because:",opts:["It makes code faster","It ensures reproducible random numbers","It sets max random value to 42","It shuffles data 42 times"],ans:1,exp:"<strong>Random seed</strong> fixes the starting point of the random number generator. With the same seed, you always get the same 'random' numbers — critical in ML so experiments are <strong>reproducible</strong>. Seed 42 is a convention (from Hitchhiker's Guide)."},
+  {t:"Array Creation",q:"What is the output?\n arr = np.linspace(0, 1, 5)",code:"np.linspace(0, 1, 5)",opts:["[0, 0.25, 0.5, 0.75, 1.0]","[0, 0.2, 0.4, 0.6, 0.8]","[0, 1, 2, 3, 4]","[0.2, 0.4, 0.6, 0.8, 1.0]"],ans:0,exp:"<strong>np.linspace(start, stop, num)</strong> creates <code>num</code> equally spaced values from start to stop <em>inclusive</em>. 5 points from 0 to 1: [0, 0.25, 0.5, 0.75, 1.0]."},
+  {t:"Array Creation",q:"Which creates random floats between 0 and 1 in shape (3,3)?",opts:["np.random.randint(3,3)","np.random.rand(3,3)","np.random.normal(3,3)","np.zeros((3,3), dtype=float)"],ans:1,exp:"<strong>np.random.rand(d0,d1,...)</strong> samples from uniform distribution [0,1). <code>np.random.randint</code> gives integers. <code>np.random.normal</code> gives Gaussian. In ML, weights are often initialized with small random values."},
+  {t:"Array Creation",q:"How do you create array from Python list [1,2,3]?",code:"arr = np.??([1,2,3])",opts:["np.make([1,2,3])","np.convert([1,2,3])","np.array([1,2,3])","np.list([1,2,3])"],ans:2,exp:"<strong>np.array()</strong> is the standard constructor. It converts Python lists, tuples, or nested lists into ndarrays. This is your entry point for almost all NumPy work."},
+
+  {t:"Shape & Reshape",q:"arr has shape (12,). What does arr.reshape(3,4) do?",opts:["Raises error","Creates 3×4 matrix with same data","Creates 4×3 matrix","Flattens the array"],ans:1,exp:"<strong>reshape()</strong> changes the view of data without copying. (12,) → (3,4) works because 3×4=12. Total elements must match. In ML, you constantly reshape data: e.g., images from (784,) → (28,28) for visualization."},
+  {t:"Shape & Reshape",q:"What does arr.reshape(-1) do?",opts:["Deletes array","Reverses array","Flattens to 1D","Raises error"],ans:2,exp:"<strong>-1 in reshape</strong> means 'figure this dimension out automatically'. <code>reshape(-1)</code> flattens any array to 1D. Very common: <code>X.reshape(-1,1)</code> turns a 1D array into a column vector for sklearn models."},
+  {t:"Shape & Reshape",q:"Shape (64, 28, 28, 1) — what is arr.shape[0]?",opts:["28","1","64","784"],ans:2,exp:"<code>shape[0]</code> is the <strong>first dimension</strong> = batch_size = 64. <code>shape[1]</code>=28 (height), <code>shape[2]</code>=28 (width), <code>shape[3]</code>=1 (channels). Always check shapes when debugging neural network errors."},
+  {t:"Shape & Reshape",q:"What does arr.flatten() return?",opts:["Sorted 1D copy","1D copy of array","Transposed array","Shape tuple"],ans:1,exp:"<strong>flatten()</strong> always returns a <em>copy</em> as 1D array. Unlike <code>reshape(-1)</code> which may return a view. Flattening is used in neural networks when transitioning from conv layers to dense layers."},
+  {t:"Shape & Reshape",q:"arr = np.array([[1,2],[3,4]]). What is arr.T?",code:"arr = np.array([[1,2],[3,4]])\nprint(arr.T)",opts:["[[1,2],[3,4]]","[[1,3],[2,4]]","[1,2,3,4]","[[2,1],[4,3]]"],ans:1,exp:"<strong>.T</strong> is transpose — rows become columns. [[1,2],[3,4]].T = [[1,3],[2,4]]. Transpose is everywhere in ML: matrix multiplication, converting row vectors to column vectors, etc."},
+  {t:"Shape & Reshape",q:"np.expand_dims(arr, axis=0) on shape (3,4) gives:",opts:["(3,4)","(4,3)","(1,3,4)","(3,4,1)"],ans:2,exp:"<strong>expand_dims</strong> adds a new axis. axis=0 inserts at front: (3,4) → (1,3,4). This is commonly used to add a batch dimension: a single image (28,28,1) → (1,28,28,1) to feed to a model."},
+  {t:"Shape & Reshape",q:"np.squeeze(arr) on shape (1,3,1) gives:",opts:["(1,3,1)","(3,)","(3,1)","Error"],ans:1,exp:"<strong>np.squeeze()</strong> removes all dimensions of size 1. (1,3,1) → (3,). You can specify axis to remove only specific size-1 dims. Common after model predictions that return shape (1,num_classes)."},
+
+  {t:"Indexing & Slicing",q:"arr = np.arange(10). What is arr[2:7:2]?",opts:["[2,3,4,5,6]","[2,4,6]","[3,5,7]","[2,5,7]"],ans:1,exp:"<strong>Slicing: [start:stop:step]</strong>. arr[2:7:2] → start at index 2, stop before 7, step 2: values at indices 2,4,6 = [2,4,6]. Slicing returns a <em>view</em>, not a copy — modifying it changes the original."},
+  {t:"Indexing & Slicing",q:"arr = np.array([[1,2,3],[4,5,6]]). What is arr[1,2]?",opts:["3","6","5","2"],ans:1,exp:"<strong>2D indexing: arr[row, col]</strong>. arr[1,2] → row index 1 (second row [4,5,6]), col index 2 (third element) = 6. In ML this is how you access specific features of specific samples."},
+  {t:"Indexing & Slicing",q:"What does arr[:, 0] select from a 2D array?",opts:["First row","First element","First column","Last column"],ans:2,exp:"<strong>arr[:, 0]</strong> — ':' means all rows, '0' means column 0. This selects the entire first column. Pattern: arr[:, feature_index] extracts one feature from all samples — critical in data preprocessing."},
+  {t:"Indexing & Slicing",q:"Boolean indexing: arr = np.array([1,5,3,8,2]). Result of arr[arr>3]?",opts:["[1,3,2]","[5,8]","[True,True]","[False,True,False,True,False]"],ans:1,exp:"<strong>Boolean indexing</strong> filters elements. arr>3 creates [F,T,F,T,F]. Applying it as index returns only True elements: [5,8]. This is how you filter data in ML: e.g., <code>X[y==1]</code> gets all samples of class 1."},
+  {t:"Indexing & Slicing",q:"arr = np.arange(10). arr[-1] equals?",opts:["0","9","Error","-1"],ans:1,exp:"<strong>Negative indexing</strong>: -1 refers to the last element, -2 to second-last, etc. arr[-1] = 9 (last element of [0,1,...,9]). Very useful when you need the last prediction or last batch."},
+  {t:"Indexing & Slicing",q:"Fancy indexing: arr = np.array([10,20,30,40,50]). arr[[0,2,4]] gives?",opts:["[10,30,50]","[20,40]","[0,2,4]","Error"],ans:0,exp:"<strong>Fancy indexing</strong> uses a list of indices to select elements. arr[[0,2,4]] picks elements at positions 0,2,4 = [10,30,50]. Unlike slicing, fancy indexing always returns a <em>copy</em>."},
+  {t:"Indexing & Slicing",q:"arr[::−1] does what?",opts:["Deletes array","Reverses array","Returns empty","Raises error"],ans:1,exp:"<strong>arr[::-1]</strong> reverses the array — step of -1 goes backwards. For a 2D array, <code>arr[::-1]</code> reverses rows. Used in data augmentation (flipping images)."},
+
+  {t:"Math Operations",q:"arr = np.array([1,2,3,4]). arr * 2 gives?",opts:["Error","[2,4,6,8]","[1,2,3,4,1,2,3,4]","[[2,4],[6,8]]"],ans:1,exp:"<strong>Vectorized operations</strong> apply element-wise. arr*2 multiplies each element by 2. No loops needed! This is NumPy's core power — C-speed operations on entire arrays at once."},
+  {t:"Math Operations",q:"np.dot(A, B) when A is (3,4) and B is (4,2) — result shape?",opts:["(3,2)","(4,4)","(3,4)","Error"],ans:0,exp:"<strong>Matrix multiplication</strong>: (m,n) dot (n,p) = (m,p). (3,4)×(4,2) = (3,2). Inner dimensions must match. This is the core operation in neural network forward pass: output = np.dot(weights, input) + bias."},
+  {t:"Math Operations",q:"np.sum(arr, axis=0) on shape (3,4) gives shape:",opts:["(3,)","(4,)","scalar","(3,4)"],ans:1,exp:"<strong>axis=0</strong> collapses along rows (vertical). For (3,4) array, summing along axis=0 gives (4,) — one sum per column. axis=1 would give (3,) — one sum per row. Understanding axes is critical for loss calculations."},
+  {t:"Math Operations",q:"What is np.sqrt(np.sum(np.square(arr))) computing?",opts:["Mean","Variance","L2 norm (Euclidean distance)","Standard deviation"],ans:2,exp:"This is the <strong>L2 norm</strong> (Euclidean distance): √(Σx²). Used in: gradient clipping, regularization (L2/Ridge), distance metrics in k-NN, normalizing vectors. One of the most common ML math operations."},
+  {t:"Math Operations",q:"arr = np.array([1,2,3]). np.exp(arr) gives?",opts:["[1,4,9]","[e¹, e², e³]","[2.71, 7.38, 20.08]","Both B and C"],ans:3,exp:"<strong>np.exp()</strong> computes eˣ for each element. e¹≈2.718, e²≈7.389, e³≈20.086. exp() is used in: sigmoid activation, softmax function, and computing probabilities in neural networks."},
+  {t:"Math Operations",q:"np.log() computes which logarithm?",opts:["log base 10","log base 2","natural log (base e)","log base n"],ans:2,exp:"<strong>np.log()</strong> is natural logarithm (ln). For log base 10: np.log10(). In ML, np.log() is used in cross-entropy loss: loss = -np.sum(y * np.log(y_pred)). It converts products to sums."},
+  {t:"Math Operations",q:"np.clip(arr, 0, 1) does what?",opts:["Removes values outside [0,1]","Sets values below 0 to 0, above 1 to 1","Normalizes to [0,1]","Raises error if out of range"],ans:1,exp:"<strong>np.clip(a, min, max)</strong> clamps values: below min → min, above max → max. Used in: ReLU-like activations, preventing log(0) by clipping probabilities, gradient clipping to prevent exploding gradients."},
+  {t:"Math Operations",q:"Element-wise multiplication vs dot product:",code:"A = np.array([[1,2],[3,4]])\nB = np.array([[1,0],[0,1]])\nprint(A * B)   # vs\nprint(np.dot(A, B))",opts:["Both give same result","* is element-wise, dot is matrix multiply","dot is element-wise, * is matrix multiply","Both raise error"],ans:1,exp:"<strong>* operator</strong> = element-wise (Hadamard product): each position multiplied separately. <strong>np.dot()</strong> = matrix multiplication. A*I (identity) ≠ np.dot(A,I) in general. In PyTorch/TF, this distinction is critical."},
+
+  {t:"Broadcasting",q:"arr of shape (3,1) + arr of shape (1,4) gives shape:",opts:["Error","(3,4)","(4,1)","(3,)"],ans:1,exp:"<strong>Broadcasting</strong>: NumPy expands dims of size 1 to match. (3,1) broadcasts to (3,4), (1,4) broadcasts to (3,4). Result: (3,4). Rule: dimensions are compatible if equal or one of them is 1. This avoids explicit loops."},
+  {t:"Broadcasting",q:"arr of shape (5,3) + scalar 10 — what happens?",opts:["Error","Adds 10 to first element only","Adds 10 to all 15 elements","Returns scalar 10"],ans:2,exp:"<strong>Scalar broadcasting</strong>: the scalar is treated as shape (1,1) and broadcast to match (5,3). Every element gets +10. This is how bias addition works in neural networks: output = np.dot(W,x) + b where b broadcasts."},
+  {t:"Broadcasting",q:"Which pair of shapes can NOT be broadcast together?",opts:["(3,1) and (1,4)","(3,4) and (4,)","(2,3) and (3,2)","(5,1) and (1)"],ans:2,exp:"<strong>(2,3) and (3,2) cannot broadcast</strong>: dimensions must be equal or one must be 1. 2≠3 and 3≠2, neither is 1. Broadcasting rules check from trailing dims: 3≠2 fails. You'd need to explicitly reshape first."},
+
+  {t:"Statistics",q:"np.mean(arr, axis=1) on (4,3) array gives?",opts:["4 means (one per row)","3 means (one per col)","1 mean (overall)","(4,3) array"],ans:0,exp:"<strong>axis=1</strong> computes along columns (horizontal). For each of the 4 rows, compute mean of 3 values → shape (4,). In ML: computing mean loss per sample, mean activation per neuron."},
+  {t:"Statistics",q:"What does np.std(arr) measure?",opts:["Average value","Max minus min","Spread around the mean","Median deviation"],ans:2,exp:"<strong>Standard deviation</strong> measures how spread out values are from the mean. Low std = values clustered near mean. Used in: feature scaling (standardization: x-mean/std), batch normalization, detecting outliers."},
+  {t:"Statistics",q:"np.percentile(arr, 75) returns:",opts:["75% of max value","Value below which 75% of data falls","Mean of top 75% values","75th index value"],ans:1,exp:"<strong>Percentile</strong>: the value below which X% of observations fall. 75th percentile means 75% of data is below this value. Used in: outlier detection (IQR method uses 25th & 75th), data analysis, setting thresholds."},
+  {t:"Statistics",q:"arr = np.array([2,2,3,4,4,4,5]). np.unique(arr) gives?",opts:["[2,3,4,5]","[2,2,3,4,4,4,5]","4 (most common)","3 (middle value)"],ans:0,exp:"<strong>np.unique()</strong> returns sorted unique values. Also: <code>np.unique(arr, return_counts=True)</code> gives counts too. Used to find number of classes in a dataset, check for duplicate values."},
+  {t:"Statistics",q:"np.argmax(arr) returns?",opts:["Maximum value","Index of maximum value","Array of all max values","Count of max occurrences"],ans:1,exp:"<strong>argmax</strong> = ARGument of MAXimum = index where max occurs. Critical in ML: after softmax, <code>np.argmax(predictions, axis=1)</code> converts probability distributions to class labels. argmin similarly."},
+  {t:"Statistics",q:"np.median([1, 2, 100]) gives?",opts:["34.33","51","2","1"],ans:2,exp:"<strong>Median</strong> = middle value when sorted. [1,2,100] → sorted is same → median = 2. Unlike mean (34.33), median is robust to outliers. In ML: used in robust statistics, missing value imputation."},
+
+  {t:"Array Operations",q:"np.concatenate([a,b], axis=0) when a:(3,4), b:(2,4) gives?",opts:["(5,4)","(3,8)","Error","(6,4)"],ans:0,exp:"<strong>concatenate axis=0</strong>: stacks vertically (along rows). (3,4)+(2,4) → (5,4). Columns must match. axis=1 would stack horizontally. Used to combine train and validation data, merge feature sets."},
+  {t:"Array Operations",q:"np.vstack vs np.hstack — which stacks vertically?",opts:["hstack","vstack","Both","Neither"],ans:1,exp:"<strong>vstack</strong> = vertical stack (rows). <strong>hstack</strong> = horizontal stack (columns). Equivalent to concatenate with axis=0 and axis=1 respectively. Common use: building dataset from multiple batches."},
+  {t:"Array Operations",q:"np.sort(arr) vs arr.sort() — key difference?",opts:["No difference","np.sort returns copy, arr.sort is in-place","arr.sort returns copy, np.sort is in-place","np.sort only works on 1D"],ans:1,exp:"<strong>np.sort()</strong> returns a new sorted array (original unchanged). <strong>arr.sort()</strong> sorts in-place (original modified). This distinction matters when you need to preserve original data — always safer to use np.sort() in ML pipelines."},
+  {t:"Array Operations",q:"np.where(condition, x, y) — what does it return?",opts:["Indices where condition is True","x where True, y where False","Boolean array","Count of True values"],ans:1,exp:"<strong>np.where(cond, x, y)</strong>: element-wise if-else. Returns x where condition is True, y where False. Example: ReLU = <code>np.where(arr>0, arr, 0)</code>. Also used for data cleaning and conditional replacement."},
+  {t:"Array Operations",q:"What does np.argsort(arr) return?",opts:["Sorted values","Indices that would sort array","Ranks of elements","Top k indices"],ans:1,exp:"<strong>argsort</strong> returns indices that would sort the array. arr=[30,10,20], argsort=[1,2,0] (10 is at index 1, 20 at 2, 30 at 0). Used in k-NN to find k nearest neighbors by sorting distances."},
+  {t:"Array Operations",q:"np.delete(arr, [1,3], axis=0) removes:",opts:["Columns 1 and 3","Elements at indices 1 and 3","Rows 1 and 3","Values 1 and 3"],ans:2,exp:"<strong>np.delete(arr, obj, axis)</strong>: axis=0 deletes rows, axis=1 deletes columns. Removes rows at indices 1 and 3. Used to drop specific samples from dataset."},
+
+  {t:"Data Types",q:"Default dtype of np.array([1,2,3]) is?",opts:["float64","int64","int32","object"],ans:1,exp:"<strong>Integer list → int64</strong> by default on 64-bit systems. Floats → float64. Mixed → object or float. Checking dtype is important: most ML libraries expect float32 for efficiency. Convert: <code>arr.astype(np.float32)</code>."},
+  {t:"Data Types",q:"Why use float32 instead of float64 in deep learning?",opts:["float32 is more accurate","float32 uses less memory and is faster on GPU","float32 trains longer","No real difference"],ans:1,exp:"<strong>float32 uses 4 bytes vs float64's 8 bytes</strong>. On GPU, float32 is 2x faster and uses half memory. GPUs are optimized for float32. Modern frameworks (PyTorch, TF) use float32 by default. Only use float64 when precision is critical."},
+  {t:"Data Types",q:"arr.astype(np.float32) does what?",opts:["Checks if float32","Converts dtype in-place","Returns new array with float32 dtype","Raises error if not float"],ans:2,exp:"<strong>astype()</strong> always returns a new array with the requested dtype (original unchanged unless you reassign). Before feeding data to PyTorch: <code>X = X.astype(np.float32)</code>. Also used when converting labels to int."},
+  {t:"Data Types",q:"What is the issue with integer overflow in NumPy?",code:"arr = np.array([200], dtype=np.int8)\nprint(arr * 2)",opts:["Returns 400","Returns -56 (overflow)","Raises OverflowError","Returns inf"],ans:1,exp:"<strong>int8 range is -128 to 127</strong>. 200*2=400 overflows → wraps around to -56 silently! NumPy doesn't raise exceptions for overflow. Always check your dtype range. This is why float32 is safer for most ML computations."},
+
+  {t:"Linear Algebra",q:"np.linalg.inv(A) computes?",opts:["Eigenvalues","Transpose","Matrix inverse","Determinant"],ans:2,exp:"<strong>Matrix inverse A⁻¹</strong>: A×A⁻¹ = I (identity). Used in closed-form solutions: Linear Regression normal equation: θ = (XᵀX)⁻¹Xᵀy. Only square, non-singular matrices are invertible."},
+  {t:"Linear Algebra",q:"np.linalg.eig(A) returns?",opts:["Only eigenvalues","Only eigenvectors","Both eigenvalues and eigenvectors","Singular values"],ans:2,exp:"<strong>eig()</strong> returns (eigenvalues, eigenvectors). Eigenvalues/vectors are the core of PCA (Principal Component Analysis) — a key dimensionality reduction technique. The eigenvectors of the covariance matrix are the principal components."},
+  {t:"Linear Algebra",q:"np.linalg.norm(arr) computes by default?",opts:["L1 norm","L2 norm (Euclidean)","Infinity norm","Frobenius norm"],ans:1,exp:"<strong>Default norm is L2</strong> = √(Σx²). For specific norms: ord=1 for L1, ord=np.inf for max. L1 and L2 norms are used in regularization (Lasso/Ridge) and gradient clipping to stabilize training."},
+  {t:"Linear Algebra",q:"np.linalg.svd(A) decomposes matrix into?",opts:["Two matrices","Three matrices U,S,Vᵀ","Eigenvalue matrix","LU decomposition"],ans:1,exp:"<strong>SVD (Singular Value Decomposition)</strong>: A = U×Σ×Vᵀ. Used in PCA, recommendation systems (collaborative filtering), dimensionality reduction, and computing pseudo-inverse. One of the most important decompositions in ML."},
+  {t:"Linear Algebra",q:"np.linalg.solve(A, b) solves:",opts:["A*A = b","A*x = b for x","A + b = 0","eigenvalue problem"],ans:1,exp:"<strong>np.linalg.solve(A,b)</strong> solves the linear system Ax=b. More numerically stable than computing A⁻¹×b. Used in linear regression, gradient descent closed forms, and many optimization problems."},
+  {t:"Linear Algebra",q:"np.linalg.det(A) returns what?",opts:["Determinant","Transpose","Trace","Rank"],ans:0,exp:"<strong>Determinant</strong>: scalar value encoding matrix properties. det=0 means matrix is singular (not invertible). det is used to check if a covariance matrix is valid. For large matrices, use np.linalg.slogdet for numerical stability."},
+  {t:"Linear Algebra",q:"np.trace(A) computes?",opts:["Determinant","Sum of diagonal elements","Max diagonal element","Matrix rank"],ans:1,exp:"<strong>Trace</strong> = sum of diagonal elements = sum of eigenvalues. Used in: checking matrix properties, regularization terms, evaluating covariance matrices. <code>np.trace(A)</code> is equivalent to <code>np.diag(A).sum()</code>."},
+
+  {t:"Random Module",q:"np.random.randn(3,4) generates values from:",opts:["Uniform [0,1)","Standard normal (mean=0, std=1)","Random integers","Uniform [-1,1)"],ans:1,exp:"<strong>randn</strong> = Random Normal distribution N(0,1). This is how neural network weights are often initialized — small values from normal distribution. Compare: rand() → uniform [0,1). In PyTorch: torch.randn()."},
+  {t:"Random Module",q:"np.random.choice([1,2,3,4,5], size=3, replace=False)",opts:["Always [1,2,3]","3 unique random elements","3 elements, may repeat","Error if size>array length"],ans:1,exp:"<strong>replace=False</strong> = sampling without replacement (no repeats). Used for: train/test split (choose indices), mini-batch sampling, bootstrapping. <code>replace=True</code> allows repeats (bootstrap sampling)."},
+  {t:"Random Module",q:"np.random.shuffle(arr) vs np.random.permutation(arr):",opts:["Identical behavior","shuffle is in-place, permutation returns new array","permutation is faster","shuffle returns indices"],ans:1,exp:"<strong>shuffle</strong>: modifies array in-place, returns None. <strong>permutation</strong>: returns new shuffled array, original unchanged. For datasets: shuffle indices then reorder: <code>idx = np.random.permutation(len(X)); X, y = X[idx], y[idx]</code>."},
+  {t:"Random Module",q:"np.random.normal(loc=5, scale=2, size=1000) — what is loc?",opts:["Variance","Standard deviation","Mean","Number of samples"],ans:2,exp:"<strong>loc = mean (μ)</strong>, <strong>scale = std deviation (σ)</strong>. N(5,2) = normal distribution centered at 5 with spread 2. Used to generate synthetic datasets for testing, simulate noise in data augmentation, initialize weights."},
+
+  {t:"Memory & Views",q:"a = arr[2:5] — is 'a' a view or copy?",opts:["Always a copy","Always a view","Depends on dtype","Depends on OS"],ans:1,exp:"<strong>Basic slicing returns a view</strong>. 'a' shares memory with arr. Modifying a modifies arr! To get independent copy: <code>a = arr[2:5].copy()</code>. Views are memory-efficient but can cause subtle bugs in data pipelines."},
+  {t:"Memory & Views",q:"How to check if two arrays share memory?",opts:["arr1 == arr2","np.shares_memory(arr1, arr2)","arr1.base == arr2","arr1.id == arr2.id"],ans:1,exp:"<strong>np.shares_memory(a,b)</strong> returns True if arrays share any memory. Also: <code>a.base is arr</code> checks if 'a' is a view of 'arr'. Understanding views vs copies is crucial for avoiding silent data corruption in ML pipelines."},
+  {t:"Memory & Views",q:"arr.copy() creates:",opts:["A view","Deep copy (independent)","Shallow copy","Reference"],ans:1,exp:"<strong>.copy()</strong> creates a completely independent copy — no shared memory. Use it when you need to modify data without affecting the original, e.g., before preprocessing transformations: <code>X_scaled = X.copy(); X_scaled -= X.mean()</code>."},
+  {t:"Memory & Views",q:"Fancy indexing (arr[[0,1,2]]) returns a view or copy?",opts:["Always view","Always copy","Depends on array size","Depends on indices"],ans:1,exp:"<strong>Fancy indexing always returns a copy</strong>. Unlike basic slicing (which is a view). This is important: if you want to modify original via fancy indexing, you must assign back: <code>arr[[0,2]] = 0</code> (this works — direct assignment)."},
+
+  {t:"Practical ML",q:"How to normalize features to [0,1] range?",code:"# Min-Max normalization\nnormalized = (X - ???) / (??? - ???)",opts:["(X-mean)/(std)","(X-min)/(max-min)","X/max","(X-median)/IQR"],ans:1,exp:"<strong>Min-Max normalization</strong>: (X-min)/(max-min) scales all values to [0,1]. Used as preprocessing for many ML algorithms. Contrast with standardization: (X-mean)/std which gives mean=0, std=1 (no fixed range)."},
+  {t:"Practical ML",q:"You have labels [0,1,2,1,0,2]. How to one-hot encode with NumPy?",code:"y = np.array([0,1,2,1,0,2])\nn_classes = 3\none_hot = np.eye(???)[???]",opts:["np.eye(3)[y]","np.zeros(3)[y]","np.ones(3)[y]","np.eye(y)[3]"],ans:0,exp:"<strong>np.eye(n_classes)[y]</strong> is the elegant NumPy one-hot trick. np.eye(3) is 3×3 identity. Indexing by y selects rows: y=0→[1,0,0], y=1→[0,1,0], y=2→[0,0,1]. Result shape: (6,3)."},
+  {t:"Practical ML",q:"How to split dataset into 80% train, 20% test?",code:"idx = np.random.permutation(len(X))\nsplit = int(0.8 * len(X))\nX_train = X[idx[???]]\nX_test = X[idx[???]]",opts:["[:split] and [split:]","[split:] and [:split]","[0.8:] and [:0.2]","[:80] and [80:]"],ans:0,exp:"<strong>idx[:split]</strong> = first 80% of shuffled indices → train. <strong>idx[split:]</strong> = remaining 20% → test. The permutation ensures random shuffle. This is a fundamental operation before every ML experiment."},
+  {t:"Practical ML",q:"Computing softmax: what prevents numerical overflow?",code:"def softmax(x):\n    e_x = np.exp(x - ???)\n    return e_x / e_x.sum()",opts:["np.mean(x)","np.max(x)","np.min(x)","x[0]"],ans:1,exp:"<strong>Subtract np.max(x) before exp()</strong>: numerically stable softmax trick. exp(large_number) can overflow to inf. Subtracting max doesn't change softmax output (mathematically equivalent) but keeps values in safe range. Critical implementation detail!"},
+  {t:"Practical ML",q:"Cross-entropy loss = -np.sum(y * np.log(y_pred)). What if y_pred contains 0?",opts:["log(0) = 0","log(0) = -inf, causes issues","log(0) = 1","No problem"],ans:1,exp:"<strong>log(0) = -infinity</strong> → loss becomes infinite, gradients explode! Fix: <code>np.clip(y_pred, 1e-7, 1-1e-7)</code> before taking log. This epsilon clipping is standard practice in any custom loss implementation."},
+  {t:"Practical ML",q:"Batch gradient descent: you have X=(1000,20), W=(20,1). Forward pass:",code:"predictions = np.dot(X, W) + b",opts:["Shape error","Output shape (1000,1)","Output shape (20,1)","Output shape (1000,20)"],ans:1,exp:"<strong>(1000,20) × (20,1) = (1000,1)</strong>. Each row of X (one sample with 20 features) dot-producted with W gives one prediction. b broadcasts to all 1000. This is the core of linear/logistic regression and dense neural network layers."},
+  {t:"Practical ML",q:"To compute pairwise Euclidean distances between 50 points (each 10-dim):",opts:["Use Python loops","Use np.linalg.norm with broadcasting","Both equivalent","Only scipy can do this"],ans:1,exp:"<strong>Broadcasting + vectorized ops</strong>: <code>diff = X[:,np.newaxis] - X[np.newaxis,:]; dists = np.sqrt((diff**2).sum(axis=-1))</code>. This gives (50,50) distance matrix without any Python loops. Loop version would be ~100x slower — critical in k-NN algorithms."},
+  {t:"Practical ML",q:"Sigmoid function: σ(x) = 1/(1+e^(-x)). NumPy implementation:",opts:["np.sigmoid(x)","1/(1+np.exp(-x))","np.exp(x)/(np.exp(x)+1)","Both B and C"],ans:3,exp:"Both <strong>1/(1+np.exp(-x))</strong> and <strong>np.exp(x)/(np.exp(x)+1)</strong> are mathematically equivalent sigmoid implementations. Option B is preferred (numerically more stable for negative x). No built-in np.sigmoid — you implement it yourself!"},
+
+  {t:"Advanced",q:"np.einsum('ij,jk->ik', A, B) computes?",opts:["Element-wise multiply","Matrix multiplication","Dot product of rows","Trace"],ans:1,exp:"<strong>einsum</strong> (Einstein summation) is incredibly powerful. 'ij,jk->ik': contract over j → matrix multiplication. einsum can express: matrix multiply, batch matrix ops, outer products, traces. Used in attention mechanisms in transformers!"},
+  {t:"Advanced",q:"np.memmap is used for?",opts:["Memory profiling","Working with arrays larger than RAM","Faster computation","GPU arrays"],ans:1,exp:"<strong>memmap (memory-mapped files)</strong>: access huge arrays stored on disk as if they were in RAM. Only loads portions you access. Essential when datasets don't fit in memory — common with large image datasets or genomics data."},
+  {t:"Advanced",q:"np.vectorize(func) — main purpose?",opts:["Makes function faster with SIMD","Applies Python function element-wise","Converts to GPU","Creates anonymous function"],ans:1,exp:"<strong>np.vectorize</strong> applies a scalar Python function element-wise across array. BUT: it's basically a loop internally — NOT faster than manual loops! It's a convenience wrapper for syntax, not performance. For real speed, use built-in ufuncs."},
+  {t:"Advanced",q:"What are NumPy ufuncs?",opts:["User-defined functions","Universal functions operating element-wise","Functions only for 1D arrays","Functions using GPU"],ans:1,exp:"<strong>Universal functions (ufuncs)</strong>: compiled C functions that operate element-wise on arrays. Examples: np.add, np.multiply, np.exp, np.sin. They support broadcasting, type casting, and out-parameter. They are why NumPy is fast — C speed, Python syntax."},
+  {t:"Advanced",q:"np.searchsorted(sorted_arr, value) returns?",opts:["Index of value (or error if not found)","Index where value should be inserted to maintain sort","Nearest value","Boolean"],ans:1,exp:"<strong>searchsorted</strong> uses binary search to find insertion point. Useful for: binning continuous data, finding quantile thresholds, efficient lookup in sorted arrays. O(log n) vs O(n) for linear search."},
+  {t:"Advanced",q:"Difference between np.nan and None in arrays:",opts:["Identical","np.nan is float, enables vectorized ops; None creates object array","None is better for ML","np.nan raises errors"],ans:1,exp:"<strong>np.nan</strong> is a special float value — array stays float64, all ufuncs still work (nan propagates). <strong>None</strong> forces object dtype — breaks vectorized operations. Always use np.nan for missing values in ML pipelines. Check: <code>np.isnan(arr)</code>."},
+  {t:"Advanced",q:"np.apply_along_axis(func, axis=1, arr) — what does it do?",opts:["Applies func to entire array","Applies func to each row (if axis=1)","Applies func to each element","Applies func column-wise always"],ans:1,exp:"<strong>apply_along_axis(func, axis, arr)</strong>: applies func to 1D slices along given axis. axis=1 → func called on each row. axis=0 → func called on each column. Useful for custom row/column operations, but vectorized alternatives are faster."},
+  {t:"Advanced",q:"np.histogram(data, bins=10) returns:",opts:["Only bin counts","Only bin edges","Both (counts, bin_edges)","Normalized probability density"],ans:2,exp:"<strong>np.histogram</strong> returns (counts, bin_edges). Counts: how many values fall in each bin. bin_edges: the boundary values (length = bins+1). Used in data exploration, visualizing distributions, and building histogram-based features."},
+
+  {t:"Performance",q:"Which is fastest for summing a large array?",opts:["Python for loop","sum() built-in","np.sum()","np.add.reduce()"],ans:2,exp:"<strong>np.sum()</strong> is implemented in C and runs as a vectorized operation. Python loops are ~100x slower. np.add.reduce() is equivalent but less readable. The golden rule: avoid Python loops over array elements — always find the NumPy way."},
+  {t:"Performance",q:"Why is NumPy faster than Python lists?",opts:["NumPy uses GPUs","Fixed dtype + contiguous C memory + vectorized C ops","NumPy uses multiple CPUs","NumPy compresses data"],ans:1,exp:"Three reasons: (1) <strong>Homogeneous dtype</strong> — no type checking per element. (2) <strong>Contiguous memory</strong> — cache-friendly access. (3) <strong>Vectorized C/FORTRAN operations</strong> — SIMD instructions. Python lists store object pointers + type info per element = much more overhead."},
+  {t:"Performance",q:"When should you use np.zeros() vs np.empty()?",opts:["Always use zeros","empty() is faster (no initialization), use when you'll fill all values","zeros is always safer","No performance difference"],ans:1,exp:"<strong>np.empty()</strong> allocates memory without initializing — slightly faster. Use it ONLY when you're about to fill every element. If any element might be read before being set, use np.zeros() for safety (empty contains garbage values from previous memory use)."},
+  {t:"Performance",q:"C-order vs F-order memory layout affects performance when:",opts:["Always — no difference","Row operations (C-order faster) vs column operations (F-order faster)","Only for 1D arrays","Only on GPU"],ans:1,exp:"<strong>C-order (row-major)</strong>: rows stored contiguously → row operations are cache-friendly. <strong>F-order (column-major, Fortran)</strong>: columns contiguous → column operations faster. NumPy default is C-order. Matters for performance in large matrix operations."},
+
+  {t:"Practical Debugging",q:"RuntimeWarning: invalid value in true_divide — likely cause?",opts:["Array is too large","Division by zero or 0/0 giving NaN","Integer overflow","Wrong dtype"],ans:1,exp:"<strong>0/0 or inf/inf gives NaN</strong> with RuntimeWarning. Also: np.log(0), np.sqrt(-1). Always check for zeros before dividing: add epsilon (<code>denominator + 1e-8</code>) or use np.where. NaN silently propagates through all subsequent operations!"},
+  {t:"Practical Debugging",q:"How to count NaN values in array arr?",opts:["arr.count(np.nan)","np.count_nan(arr)","np.isnan(arr).sum()","arr.nan_count()"],ans:2,exp:"<strong>np.isnan(arr).sum()</strong>: isnan() creates boolean array (True where NaN), sum() counts Trues. Also: <code>np.isnan(arr).any()</code> to check if any NaN exists. Always check for NaNs after data loading — they silently corrupt training!"},
+  {t:"Practical Debugging",q:"arr1 shape is (100, 10) and arr2 is (10, 100). np.dot gives?",opts:["(100,100)","(10,10)","(100,10)","Error"],ans:0,exp:"<strong>(100,10) dot (10,100) = (100,100)</strong>. Matrix multiplication: inner dims must match (both 10). Result shape = outer dims. Be careful: this is NOT the same as (10,100) dot (100,10) = (10,10). Shape errors are the most common bug in neural network implementations."},
+
+  {t:"Shape & Reshape",q:"np.newaxis is equivalent to?",opts:["None","np.expand_dims with no axis","reshape(-1)","squeeze()"],ans:0,exp:"<strong>np.newaxis is literally None</strong>. arr[np.newaxis, :] = arr[None, :]. Both insert a new axis of size 1. arr.shape = (5,) → arr[np.newaxis,:].shape = (1,5). Used to add batch or channel dimensions for neural network input."},
+  {t:"Array Creation",q:"np.tile(arr, 3) on arr=[1,2,3] gives?",opts:["[1,1,1,2,2,2,3,3,3]","[1,2,3,1,2,3,1,2,3]","[[1,2,3],[1,2,3],[1,2,3]]","[3,6,9]"],ans:1,exp:"<strong>np.tile(arr, n)</strong> repeats the whole array n times: [1,2,3] tiled 3 times = [1,2,3,1,2,3,1,2,3]. Compare: np.repeat([1,2,3], 3) = [1,1,1,2,2,2,3,3,3] (repeats each element). Used in data augmentation and feature engineering."},
+  {t:"Math Operations",q:"np.outer(a, b) where a=[1,2,3] and b=[1,2] gives?",code:"np.outer([1,2,3], [1,2])",opts:["[1,2,2,4,3,6]","[[1,2],[2,4],[3,6]]","[3,6]","Error"],ans:1,exp:"<strong>Outer product</strong>: each element of a multiplied by each element of b. (3,)×(2,) → (3,2) matrix. [[1×1,1×2],[2×1,2×2],[3×1,3×2]] = [[1,2],[2,4],[3,6]]. Used in: attention matrices, recommendation systems, gradient computations."},
+  {t:"Statistics",q:"np.corrcoef(X) returns a?",opts:["Single correlation value","Correlation matrix","Covariance matrix","P-values matrix"],ans:1,exp:"<strong>np.corrcoef(X)</strong> returns the correlation coefficient matrix (values -1 to 1). Shape (n_features, n_features). Entry [i,j] = correlation between feature i and j. Used in feature selection: remove highly correlated features to reduce redundancy."},
+  {t:"Array Operations",q:"np.cumsum([1,2,3,4]) returns?",opts:["[1,3,6,10]","[10]","[1,2,3,4]","[4,3,2,1]"],ans:0,exp:"<strong>Cumulative sum</strong>: each element is sum of all previous elements. [1, 1+2, 1+2+3, 1+2+3+4] = [1,3,6,10]. Used in: computing cumulative rewards in reinforcement learning, prefix sums for efficient range queries."},
+  {t:"Linear Algebra",q:"np.linalg.matrix_rank(A) returns?",opts:["Number of rows","Number of non-zero eigenvalues","Rank (number of linearly independent rows/cols)","Determinant"],ans:2,exp:"<strong>Matrix rank</strong> = number of linearly independent rows (or columns). Full rank means no feature is a linear combination of others. Rank-deficient matrices cause problems in linear regression (multicollinearity). Related to number of non-zero singular values."},
+  {t:"Practical ML",q:"Feature scaling: which numpy operation computes z-score standardization?",code:"X_scaled = (X - ???) / ???",opts:["X.mean() / X.std()","X.min() / X.max()","X.mean() and X.std()","np.normalize(X)"],ans:2,exp:"<strong>Z-score: (X - mean) / std</strong>. With axis control: <code>X_scaled = (X - X.mean(axis=0)) / X.std(axis=0)</code>. axis=0 computes per-feature mean/std (column-wise). After scaling: each feature has mean≈0, std≈1. Required for SVM, PCA, gradient descent convergence."},
+  {t:"Advanced",q:"np.finfo(np.float32).eps gives?",opts:["Max float32 value","Smallest positive float32","Machine epsilon (float32)","NaN"],ans:2,exp:"<strong>Machine epsilon</strong>: smallest float such that 1+eps≠1. float32 eps≈1.19e-7. Used to add numerical stability: <code>log(x + np.finfo(float).eps)</code> prevents log(0). Know your precision limits to avoid numerical bugs in custom loss functions."},
+  {t:"Performance",q:"For very large arrays, which is more memory-efficient?",code:"# Option A\nresult = arr * 2 + arr * 3\n# Option B\nnp.multiply(arr, 2, out=result)\nnp.multiply(arr, 3, out=temp)\nnp.add(result, temp, out=result)",opts:["Option A (cleaner)","Option B (out parameter avoids temp arrays)","Both identical","Option A uses less memory"],ans:1,exp:"<strong>out parameter</strong> writes directly to existing array, avoiding temporary allocations. Option A creates 2 intermediate arrays (arr*2, arr*3). For large arrays (GB scale), this matters. Most NumPy ufuncs support the <code>out=</code> parameter."},
+  {t:"Array Creation",q:"np.diag(arr) when arr is 1D vs 2D:",opts:["Always creates diagonal matrix","1D→diagonal matrix, 2D→extracts diagonal","2D→diagonal matrix, 1D→extracts diagonal","Always extracts diagonal"],ans:1,exp:"<strong>np.diag()</strong> is context-aware: 1D input → creates 2D diagonal matrix with those values. 2D input → extracts diagonal as 1D. Used in: PCA (diagonal of eigenvalue matrix), creating covariance matrices, regularization (adding λI)."},
+  {t:"Indexing & Slicing",q:"arr = np.arange(12).reshape(3,4). arr[1:, 1:3] gives shape?",opts:["(2,2)","(2,3)","(3,2)","(1,2)"],ans:0,exp:"<strong>arr[1:, 1:3]</strong>: rows from index 1 to end = 2 rows; cols 1,2 = 2 cols. Shape: (2,2). This kind of 2D slicing is used constantly in ML: selecting specific features, cropping image patches, selecting time windows."},
+  {t:"Practical ML",q:"np.nan_to_num(arr) replaces NaN with:",opts:["0","Mean of array","np.inf","Raises error"],ans:0,exp:"<strong>np.nan_to_num(arr)</strong> replaces NaN→0, +inf→large number, -inf→large negative. Quick fix for NaN issues, but careful: replacing with 0 changes distribution. Better practice: impute with mean/median before this. Use as last resort in pipelines."},
+  {t:"Statistics",q:"Difference between np.var(arr) and np.var(arr, ddof=1):",opts:["No difference","ddof=0 is population variance, ddof=1 is sample variance","ddof=1 is always smaller","ddof only matters for large arrays"],ans:1,exp:"<strong>ddof (Delta Degrees of Freedom)</strong>: ddof=0 → divide by N (population variance). ddof=1 → divide by N-1 (Bessel's correction, unbiased sample variance). For ML on samples of population, use ddof=1. For complete dataset, ddof=0."},
+  {t:"Array Operations",q:"np.diff(arr) on [1, 3, 6, 10] gives?",opts:["[3,6,10]","[2,3,4]","[1,2,3,4]","[-2,-3,-4]"],ans:1,exp:"<strong>np.diff()</strong> computes first discrete difference: each element minus previous. [3-1, 6-3, 10-6] = [2,3,4]. Used in: computing velocity from position, detecting changes in time series, numerical differentiation for custom gradient implementations."},
+  {t:"Advanced",q:"np.meshgrid(x, y) is commonly used for?",opts:["Mesh network operations","Creating coordinate grids for plotting or computing functions over 2D space","Reshaping arrays","Creating identity matrices"],ans:1,exp:"<strong>meshgrid</strong> creates 2D grids from 1D arrays. Used in: plotting decision boundaries of classifiers, computing loss landscapes, visualizing functions over parameter space. Essential for understanding model behavior visually."},
+  {t:"Practical ML",q:"How to compute cosine similarity between two vectors?",code:"def cosine_sim(a, b):\n    return np.dot(a,b) / (np.linalg.norm(a) * np.linalg.norm(b))",opts:["This is L2 distance","This is correct cosine similarity","This is dot product only","This gives angle in degrees"],ans:1,exp:"<strong>Cosine similarity = dot(a,b)/(||a||×||b||)</strong>. Range: -1 (opposite) to 1 (identical direction). Used in: NLP (word similarity), recommendation systems, face recognition. Measures angle between vectors regardless of magnitude."},
+  {t:"Shape & Reshape",q:"arr.ravel() vs arr.flatten() — key difference?",opts:["ravel is faster always","ravel returns view when possible, flatten always copies","flatten is newer","ravel only works on 1D"],ans:1,exp:"<strong>ravel()</strong>: returns flattened view if possible (no copy) → faster, memory-efficient. <strong>flatten()</strong>: always returns a copy. Prefer ravel() for read-only, flatten() when you need to modify without affecting original."},
+  {t:"Math Operations",q:"np.maximum(arr1, arr2) vs np.max(arr1) — difference?",opts:["No difference","maximum is element-wise between two arrays, max finds single maximum","maximum is slower","max works on two arrays too"],ans:1,exp:"<strong>np.maximum(a,b)</strong>: element-wise max between two arrays — same shape required. Result: each position is max of that position in a and b. <strong>np.max(arr)</strong>: reduces to single scalar (or along axis). np.maximum is used to implement ReLU: <code>np.maximum(0, x)</code>."},
+  {t:"Practical ML",q:"batch_size=32, dataset_size=100. How many full batches?",code:"n_batches = ???",opts:["100","3 (with remainder ignored)","4","32"],ans:1,exp:"<strong>100 // 32 = 3</strong> full batches. Remainder: 100 - 3×32 = 4 samples (partial batch, often dropped or handled separately). Use: <code>for i in range(0, len(X), batch_size): batch = X[i:i+batch_size]</code>. Last batch may be smaller."},
+  {t:"Statistics",q:"np.bincount([0,1,1,2,0,1]) returns?",opts:["[2,3,1]","[0,1,2]","[1,2]","3"],ans:0,exp:"<strong>np.bincount(arr)</strong> counts occurrences of each integer from 0 to max. [0,1,1,2,0,1] → 0 appears 2 times, 1 appears 3 times, 2 appears 1 time → [2,3,1]. Used for: counting class frequencies, checking class imbalance, vote counting."},
+  {t:"Advanced",q:"The @ operator in Python/NumPy (A @ B) does what?",opts:["Element-wise multiply","Matrix multiplication (same as np.dot for 2D)","Modulo operation","Bitwise AND"],ans:1,exp:"<strong>@ is the matrix multiplication operator</strong> (PEP 465, Python 3.5+). A @ B = np.dot(A,B) for 2D. For batched matmul: use np.matmul or @. Modern ML code uses @ for clarity: <code>output = X @ W + b</code> vs <code>output = np.dot(X,W) + b</code>."},
+  {t:"Data Types",q:"np.bool_ vs Python bool in arrays:",opts:["Identical","np.bool_ uses 1 byte, Python bool list uses 28+ bytes per element","Python bool is faster","No practical difference for ML"],ans:1,exp:"<strong>Memory efficiency</strong>: np.bool_ stores 1 byte per value. Python bool object = 28 bytes minimum. For boolean masks on large arrays (common in filtering): numpy is 28x more memory-efficient. Always use numpy arrays for boolean masks, not Python lists."},
+  {t:"Practical ML",q:"When loading CSV with np.genfromtxt vs np.loadtxt — key difference?",opts:["No difference","genfromtxt handles missing values, loadtxt doesn't","loadtxt is newer","genfromtxt only reads integers"],ans:1,exp:"<strong>genfromtxt</strong> handles missing/bad values (converts to NaN). <strong>loadtxt</strong> raises error on missing data. For real datasets (which often have gaps): use genfromtxt or pandas.read_csv (which is more powerful). loadtxt is for clean, well-formatted files."},
+];
+
+let current=0, score=0, wrong=0, answered=0;
+let answered_qs=new Array(ALL_QUESTIONS.length).fill(false);
+let correct_qs=new Array(ALL_QUESTIONS.length).fill(false);
+let activeFilter='All';
+let filteredIndices=[];
+
+const topics=[...new Set(ALL_QUESTIONS.map(q=>q.t))];
+
+function getFilteredIndices(){
+  if(activeFilter==='All') return ALL_QUESTIONS.map((_,i)=>i);
+  return ALL_QUESTIONS.map((_,i)=>i).filter(i=>ALL_QUESTIONS[i].t===activeFilter);
+}
+
+function buildFilterBar(){
+  const fb=document.getElementById('filter-bar');
+  const allTopics=['All',...topics];
+  fb.innerHTML=allTopics.map(t=>`<button class="filter-btn${t===activeFilter?' active':''}" onclick="setFilter('${t}')">${t}</button>`).join('');
+}
+
+function setFilter(t){
+  activeFilter=t;
+  filteredIndices=getFilteredIndices();
+  current=0;
+  buildFilterBar();
+  render();
+}
+
+function updateStats(){
+  const done=answered_qs.filter(Boolean).length;
+  const cor=correct_qs.filter(Boolean).length;
+  const wr=done-cor;
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-correct').textContent=cor;
+  document.getElementById('s-wrong').textContent=wr;
+  document.getElementById('s-pct').textContent=done?Math.round(cor/done*100)+'%':'0%';
+  document.getElementById('pbar').style.width=(done/ALL_QUESTIONS.length*100).toFixed(1)+'%';
+}
+
+function render(){
+  const qa=document.getElementById('quiz-area');
+  if(current>=filteredIndices.length){
+    const cor=correct_qs.filter(Boolean).length;
+    const tot=answered_qs.filter(Boolean).length;
+    const pct=tot?Math.round(cor/tot*100):0;
+    const msg=pct>=90?'Excellent! AI Engineer ready!':pct>=70?'Good work, keep practicing!':pct>=50?'Getting there, review weak topics!':'Keep studying — you can do it!';
+    qa.innerHTML=`<div class="finish-card"><div style="font-size:16px;font-weight:500;color:var(--color-text-primary)">Quiz Complete!</div><div class="score-big">${pct}%</div><div class="score-msg">${cor} correct out of ${tot} answered<br>${msg}</div><button class="btn primary" onclick="restart()">Start Over ↗</button></div>`;
+    return;
+  }
+  const qi=filteredIndices[current];
+  const q=ALL_QUESTIONS[qi];
+  const isAnswered=answered_qs[qi];
+  const isCorrect=correct_qs[qi];
+
+  qa.innerHTML=`
+    <div class="q-card">
+      <div class="q-meta"><span class="tag">${q.t}</span><span>Q${current+1} of ${filteredIndices.length}</span></div>
+      <div class="q-text">${q.q}</div>
+      ${q.code?`<div class="code-block">${q.code}</div>`:''}
+      <div class="options" id="opts">
+        ${q.opts.map((o,i)=>{
+          let cls='opt';
+          if(isAnswered){
+            cls+=' disabled';
+            if(i===q.ans) cls+=' reveal';
+          }
+          return `<button class="${cls}" onclick="answer(${qi},${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+        }).join('')}
+      </div>
+      ${isAnswered?`<div class="explanation">${q.exp}</div>`:''}
+      <div class="nav">
+        <button class="btn" onclick="prev()" ${current===0?'disabled':''}>← Prev</button>
+        <button class="btn primary" onclick="next()">Next →</button>
+        <span class="q-counter">${current+1}/${filteredIndices.length}</span>
+      </div>
+    </div>`;
+}
+
+function answer(qi, chosen){
+  if(answered_qs[qi]) return;
+  answered_qs[qi]=true;
+  const q=ALL_QUESTIONS[qi];
+  const opts=document.querySelectorAll('.opt');
+  opts.forEach((o,i)=>{
+    o.classList.add('disabled');
+    if(i===q.ans) o.classList.add('correct');
+    else if(i===chosen && chosen!==q.ans) o.classList.add('wrong');
+  });
+  if(chosen===q.ans) correct_qs[qi]=true;
+  updateStats();
+  const qa=document.getElementById('quiz-area');
+  const card=qa.querySelector('.q-card');
+  const nav=card.querySelector('.nav');
+  const exp=document.createElement('div');
+  exp.className='explanation';
+  exp.innerHTML=ALL_QUESTIONS[qi].exp;
+  card.insertBefore(exp,nav);
+}
+
+function next(){current=Math.min(current+1,filteredIndices.length);render();}
+function prev(){current=Math.max(current-1,0);render();}
+function restart(){current=0;answered_qs.fill(false);correct_qs.fill(false);updateStats();render();}
+
+filteredIndices=getFilteredIndices();
+buildFilterBar();
+render();
+updateStats();
+</script>

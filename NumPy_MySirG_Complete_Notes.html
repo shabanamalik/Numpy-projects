@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumPy Complete Notes – MySirG (Saurabh Shukla Sir)</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d2e;
+    --surface2: #242741;
+    --accent: #7c6af7;
+    --accent2: #4ecdc4;
+    --accent3: #ff6b6b;
+    --accent4: #ffd93d;
+    --text: #e8eaf6;
+    --text-muted: #9da8c7;
+    --code-bg: #0d1117;
+    --code-border: #30363d;
+    --green: #56d364;
+    --orange: #ff9f43;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(135deg, #1a1d2e 0%, #0f1117 50%, #1a1d2e 100%);
+    padding: 60px 40px;
+    text-align: center;
+    border-bottom: 2px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(124,106,247,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(78,205,196,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(124,106,247,0.2);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .cover h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    background: linear-gradient(135deg, #7c6af7, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .cover p { color: var(--text-muted); font-size: 16px; margin-bottom: 8px; }
+  .cover .meta {
+    display: flex; gap: 24px; justify-content: center; margin-top: 30px; flex-wrap: wrap;
+  }
+  .cover .meta span {
+    background: var(--surface2);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--accent2);
+    border: 1px solid rgba(78,205,196,0.3);
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--code-border);
+    border-radius: 12px;
+    padding: 30px 36px;
+    margin: 30px auto;
+    max-width: 900px;
+  }
+  .toc h2 { color: var(--accent4); font-size: 18px; margin-bottom: 16px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--accent2); text-decoration: none; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 20px 24px 60px; }
+
+  /* ── SECTION ── */
+  .section {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--code-border);
+    margin-bottom: 36px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 20px 28px;
+    background: linear-gradient(90deg, var(--surface2), var(--surface));
+    border-bottom: 1px solid var(--code-border);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .section-num {
+    background: linear-gradient(135deg, var(--accent), #5a4fcf);
+    color: white;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 20px; color: var(--text); font-weight: 700; }
+  .section-body { padding: 24px 28px; }
+
+  h3 {
+    color: var(--accent2);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 28px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(78,205,196,0.2);
+  }
+  h3:first-child { margin-top: 0; }
+
+  p { margin-bottom: 12px; color: var(--text); }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    margin: 14px 0;
+    overflow: hidden;
+  }
+  .code-label {
+    background: rgba(124,106,247,0.12);
+    color: var(--accent);
+    font-size: 11px;
+    padding: 6px 14px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--code-border);
+    font-family: monospace;
+    text-transform: uppercase;
+  }
+  pre {
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  code { font-family: 'Fira Code', 'Consolas', monospace; }
+
+  /* Syntax highlight */
+  .kw  { color: #f97583; }   /* keywords */
+  .fn  { color: #b392f0; }   /* functions */
+  .st  { color: #9ecbff; }   /* strings */
+  .nm  { color: #79b8ff; }   /* numbers */
+  .cm  { color: #6a737d; font-style: italic; } /* comments */
+  .op  { color: var(--accent2); }  /* operators/output */
+  .cl  { color: var(--accent4); }  /* class names */
+  .at  { color: #e3b341; }   /* attributes */
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout.info  { background: rgba(78,205,196,0.08); border-left: 3px solid var(--accent2); }
+  .callout.warn  { background: rgba(255,107,107,0.08); border-left: 3px solid var(--accent3); }
+  .callout.tip   { background: rgba(124,106,247,0.10); border-left: 3px solid var(--accent); }
+  .callout.good  { background: rgba(86,211,100,0.08); border-left: 3px solid var(--green); }
+  .callout p { margin: 0; font-size: 14px; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface2); }
+  th { padding: 10px 14px; text-align: left; color: var(--accent4); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 10px 14px; border-top: 1px solid var(--code-border); font-size: 13.5px; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  td code { background: rgba(124,106,247,0.15); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; color: #b392f0; }
+
+  /* ── CONCEPT GRID ── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+  .card p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+  /* ── PROJECT BOX ── */
+  .project-box {
+    background: linear-gradient(135deg, rgba(124,106,247,0.1), rgba(78,205,196,0.05));
+    border: 1px solid rgba(124,106,247,0.4);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .project-box h4 { color: var(--accent4); font-size: 16px; margin-bottom: 10px; }
+  .project-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; }
+
+  /* ── INLINE CODE ── */
+  p code, li code {
+    background: rgba(124,106,247,0.15);
+    color: #b392f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  ul, ol { padding-left: 22px; margin: 10px 0; }
+  li { margin: 5px 0; font-size: 14.5px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--code-border);
+  }
+  .footer span { color: var(--accent); }
+
+  @media print {
+    body { background: white; color: black; }
+    .cover { background: #f0f0ff; }
+    .section { border: 1px solid #ccc; }
+    pre { background: #f5f5f5; }
+    .code-block { border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-badge">📚 Complete Study Notes</div>
+  <h1>NumPy – Begin Your AI Journey</h1>
+  <p>Based on <strong>Sir Saurabh Shukla's</strong> Playlist | MySirG.com</p>
+  <p style="color:#7c6af7;">Every Concept · Theory + Code · Practice Ready</p>
+  <div class="meta">
+    <span>📺 11 Videos Covered</span>
+    <span>🐍 Python + NumPy</span>
+    <span>🤖 AI/ML Foundation</span>
+    <span>💡 Beginner → Project Level</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 Table of Contents</h2>
+  <ol>
+    <li><a href="#s1">Getting Started with NumPy – Introduction & Installation</a></li>
+    <li><a href="#s2">Creating Arrays – ndarray Fundamentals</a></li>
+    <li><a href="#s3">Array Attributes & Properties</a></li>
+    <li><a href="#s4">Special Arrays & Array Initialization</a></li>
+    <li><a href="#s5">Indexing and Slicing</a></li>
+    <li><a href="#s6">Reshaping, Flattening & Stacking</a></li>
+    <li><a href="#s7">Mathematical Operations & Broadcasting</a></li>
+    <li><a href="#s8">Statistical Functions</a></li>
+    <li><a href="#s9">Sorting, Searching & Filtering</a></li>
+    <li><a href="#s10">Random Module in NumPy</a></li>
+    <li><a href="#s11">Mini Projects – Applying NumPy</a></li>
+  </ol>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════ SECTION 1 ═══════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>Getting Started with NumPy – Introduction &amp; Installation</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>What is NumPy?</h3>
+    <p><strong>NumPy</strong> (Numerical Python) is the most fundamental library for numerical computing in Python. It provides a powerful <strong>N-dimensional array object</strong> and fast mathematical tools used by AI/ML frameworks like TensorFlow, PyTorch, Pandas, and Scikit-learn.</p>
+
+    <div class="grid">
+      <div class="card"><div class="card-title">Speed</div><p>Operations run in compiled C code — 50–100× faster than Python lists</p></div>
+      <div class="card"><div class="card-title">Memory</div><p>Stores data in contiguous memory blocks; much more efficient than lists</p></div>
+      <div class="card"><div class="card-title">Vectorized</div><p>Apply operations to entire arrays without loops</p></div>
+      <div class="card"><div class="card-title">Foundation</div><p>Used internally by Pandas, Matplotlib, Scikit-learn, TensorFlow</p></div>
+    </div>
+
+    <h3>Python List vs NumPy Array</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Python List</th><th>NumPy Array</th></tr></thead>
+        <tbody>
+          <tr><td>Data types</td><td>Mixed (int, str, float)</td><td>Homogeneous (same type)</td></tr>
+          <tr><td>Speed</td><td>Slow (Python loops)</td><td>Very fast (C backend)</td></tr>
+          <tr><td>Memory</td><td>More (pointers per element)</td><td>Less (contiguous block)</td></tr>
+          <tr><td>Operations</td><td>Manual loops needed</td><td>Vectorized (no loops)</td></tr>
+          <tr><td>Multi-dimensional</td><td>Needs nested lists</td><td>Built-in nd support</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Installation</h3>
+    <div class="code-block">
+      <div class="code-label">terminal / command prompt</div>
+      <pre><span class="cm"># Install using pip</span>
+pip install numpy
+
+<span class="cm"># Install using Anaconda (recommended for AI/ML)</span>
+conda install numpy
+
+<span class="cm"># Check if installed correctly</span>
+python -c <span class="st">"import numpy as np; print(np.__version__)"</span></pre>
+    </div>
+
+    <h3>Importing NumPy</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="kw">import</span> numpy <span class="kw">as</span> np   <span class="cm"># 'np' is the universal alias – always use this</span>
+
+<span class="cm"># Verify</span>
+<span class="fn">print</span>(np.__version__)   <span class="cm"># e.g., 1.26.0</span></pre>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <p><strong>Sir's Tip:</strong> Always import NumPy as <code>np</code>. This is the universal standard followed everywhere in the industry and in all AI/ML code.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 2 ═══════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>Creating Arrays – ndarray Fundamentals</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>What is an ndarray?</h3>
+    <p>The core object of NumPy is the <strong>ndarray</strong> (N-dimensional array). It stores elements of the <em>same data type</em> in a fixed-size grid structure.</p>
+
+    <h3>Creating 1D, 2D, 3D Arrays</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># 1D Array (like a row of numbers)</span>
+a = np.<span class="fn">array</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>])
+<span class="fn">print</span>(a)          <span class="op"># [10 20 30 40 50]</span>
+<span class="fn">print</span>(<span class="fn">type</span>(a))    <span class="op"># &lt;class 'numpy.ndarray'&gt;</span>
+
+<span class="cm"># 2D Array (matrix / table)</span>
+b = np.<span class="fn">array</span>([[<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>],
+               [<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>]])
+<span class="fn">print</span>(b)
+<span class="cm"># [[1 2 3]
+#  [4 5 6]]</span>
+
+<span class="cm"># 3D Array (cube / batch of matrices)</span>
+c = np.<span class="fn">array</span>([[[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>]],
+               [[<span class="nm">5</span>, <span class="nm">6</span>], [<span class="nm">7</span>, <span class="nm">8</span>]]])
+<span class="fn">print</span>(c.ndim)     <span class="op"># 3</span></pre>
+    </div>
+
+    <h3>Data Types (dtype)</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># NumPy auto-detects dtype, or you can specify</span>
+a = np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+<span class="fn">print</span>(a.dtype)              <span class="op"># int64</span>
+
+b = np.<span class="fn">array</span>([<span class="nm">1.5</span>, <span class="nm">2.5</span>])
+<span class="fn">print</span>(b.dtype)              <span class="op"># float64</span>
+
+<span class="cm"># Specify dtype manually</span>
+c = np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>], dtype=<span class="st">'float32'</span>)
+<span class="fn">print</span>(c.dtype)              <span class="op"># float32</span>
+
+<span class="cm"># Change dtype with astype()</span>
+d = c.<span class="fn">astype</span>(<span class="st">'int32'</span>)
+<span class="fn">print</span>(d)                    <span class="op"># [1 2 3]</span></pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>dtype</th><th>Description</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><code>int32 / int64</code></td><td>Integer</td><td>Counts, indices</td></tr>
+          <tr><td><code>float32 / float64</code></td><td>Decimal</td><td>ML weights, measurements</td></tr>
+          <tr><td><code>bool</code></td><td>True/False</td><td>Masks, conditions</td></tr>
+          <tr><td><code>complex64</code></td><td>Complex number</td><td>Signal processing</td></tr>
+          <tr><td><code>str_</code></td><td>String</td><td>Labels (rarely)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Creating Arrays from Python Lists/Tuples</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># From list</span>
+my_list = [<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>]
+arr = np.<span class="fn">array</span>(my_list)
+
+<span class="cm"># From tuple</span>
+my_tuple = (<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)
+arr2 = np.<span class="fn">array</span>(my_tuple)
+
+<span class="cm"># arange – like Python's range()</span>
+arr3 = np.<span class="fn">arange</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">2</span>)    <span class="cm"># start, stop, step</span>
+<span class="fn">print</span>(arr3)   <span class="op"># [0 2 4 6 8]</span>
+
+<span class="cm"># linspace – evenly spaced values (including endpoint)</span>
+arr4 = np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">5</span>)   <span class="cm"># 5 values from 0 to 1</span>
+<span class="fn">print</span>(arr4)   <span class="op"># [0.   0.25 0.5  0.75 1.  ]</span></pre>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <p><strong>arange vs linspace:</strong> Use <code>arange</code> when you know the step size. Use <code>linspace</code> when you know how many points you want. In AI/ML, <code>linspace</code> is used for creating axes in plots and feature ranges.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 3 ═══════════════ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>Array Attributes &amp; Properties</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Key Attributes</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>arr = np.<span class="fn">array</span>([[<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>],
+                [<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>]])
+
+<span class="fn">print</span>(arr.<span class="at">ndim</span>)    <span class="op"># 2           → number of dimensions</span>
+<span class="fn">print</span>(arr.<span class="at">shape</span>)   <span class="op"># (2, 3)      → (rows, columns)</span>
+<span class="fn">print</span>(arr.<span class="at">size</span>)    <span class="op"># 6           → total elements</span>
+<span class="fn">print</span>(arr.<span class="at">dtype</span>)   <span class="op"># int64       → data type</span>
+<span class="fn">print</span>(arr.<span class="at">itemsize</span>) <span class="op"># 8          → bytes per element</span>
+<span class="fn">print</span>(arr.<span class="at">nbytes</span>)  <span class="op"># 48         → total bytes (size × itemsize)</span></pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>Returns</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>.ndim</code></td><td>Number of dimensions</td><td>1D→1, 2D→2, 3D→3</td></tr>
+          <tr><td><code>.shape</code></td><td>Tuple of sizes per dimension</td><td>(3,), (2,3), (2,3,4)</td></tr>
+          <tr><td><code>.size</code></td><td>Total number of elements</td><td>2×3 = 6</td></tr>
+          <tr><td><code>.dtype</code></td><td>Data type of elements</td><td>int64, float32</td></tr>
+          <tr><td><code>.itemsize</code></td><td>Bytes for one element</td><td>float64 → 8 bytes</td></tr>
+          <tr><td><code>.nbytes</code></td><td>Total memory used</td><td>size × itemsize</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Understanding Shape</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># Shape gives (rows, columns) for 2D</span>
+a = np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>])
+<span class="fn">print</span>(a.shape)    <span class="op"># (4,)    → 1D: just 4 elements</span>
+
+b = np.<span class="fn">array</span>([[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>], [<span class="nm">5</span>, <span class="nm">6</span>]])
+<span class="fn">print</span>(b.shape)    <span class="op"># (3, 2)  → 3 rows, 2 columns</span>
+
+c = np.<span class="fn">zeros</span>((<span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>))
+<span class="fn">print</span>(c.shape)    <span class="op"># (2, 3, 4) → 3D: 2 blocks, 3 rows, 4 cols</span></pre>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🎯</div>
+      <p>In AI/ML, <strong>shape</strong> is everything. When feeding data to neural networks, you must always match the expected shape. E.g., images are typically shaped <code>(batch_size, height, width, channels)</code>.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 4 ═══════════════ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>Special Arrays &amp; Array Initialization</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Built-in Array Creators</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># All zeros</span>
+z = np.<span class="fn">zeros</span>((<span class="nm">3</span>, <span class="nm">4</span>))
+<span class="fn">print</span>(z)
+<span class="cm"># [[0. 0. 0. 0.]
+#  [0. 0. 0. 0.]
+#  [0. 0. 0. 0.]]</span>
+
+<span class="cm"># All ones</span>
+o = np.<span class="fn">ones</span>((<span class="nm">2</span>, <span class="nm">3</span>))
+<span class="fn">print</span>(o)
+
+<span class="cm"># Fill with custom value</span>
+f = np.<span class="fn">full</span>((<span class="nm">2</span>, <span class="nm">2</span>), <span class="nm">7</span>)
+<span class="fn">print</span>(f)   <span class="op"># [[7 7] [7 7]]</span>
+
+<span class="cm"># Uninitialized (random garbage values – fastest)</span>
+e = np.<span class="fn">empty</span>((<span class="nm">2</span>, <span class="nm">2</span>))
+
+<span class="cm"># Identity matrix (diagonal = 1)</span>
+i = np.<span class="fn">eye</span>(<span class="nm">3</span>)
+<span class="fn">print</span>(i)
+<span class="cm"># [[1. 0. 0.]
+#  [0. 1. 0.]
+#  [0. 0. 1.]]</span>
+
+<span class="cm"># Diagonal array</span>
+d = np.<span class="fn">diag</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+<span class="fn">print</span>(d)
+<span class="cm"># [[1 0 0]
+#  [0 2 0]
+#  [0 0 3]]</span>
+
+<span class="cm"># Same shape as another array</span>
+x = np.<span class="fn">array</span>([[<span class="nm">1</span>,<span class="nm">2</span>],[<span class="nm">3</span>,<span class="nm">4</span>]])
+z2 = np.<span class="fn">zeros_like</span>(x)
+o2 = np.<span class="fn">ones_like</span>(x)</pre>
+    </div>
+
+    <div class="callout good">
+      <div class="callout-icon">✅</div>
+      <p><strong>AI/ML Use:</strong> <code>zeros</code> and <code>ones</code> are used to initialize weights in neural networks. <code>eye</code> (identity matrix) is used in linear algebra computations. <code>empty</code> is used when performance matters and you'll fill values immediately.</p>
+    </div>
+
+    <h3>arange &amp; linspace Deep Dive</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># arange(start, stop, step) – stop is EXCLUDED</span>
+np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">10</span>, <span class="nm">2</span>)     <span class="op"># [1 3 5 7 9]</span>
+np.<span class="fn">arange</span>(<span class="nm">0.0</span>, <span class="nm">1.0</span>, <span class="nm">0.2</span>) <span class="op"># [0.  0.2 0.4 0.6 0.8]</span>
+
+<span class="cm"># linspace(start, stop, num) – stop is INCLUDED</span>
+np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">5</span>)   <span class="op"># [ 0.   2.5  5.   7.5 10. ]</span>
+
+<span class="cm"># Exclude endpoint</span>
+np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">5</span>, endpoint=<span class="kw">False</span>)  <span class="op"># [0. 2. 4. 6. 8.]</span></pre>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 5 ═══════════════ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>Indexing and Slicing</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>1D Array Indexing</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>])
+<span class="cm">#              0    1    2    3    4   ← positive index
+#             -5   -4   -3   -2   -1   ← negative index</span>
+
+<span class="fn">print</span>(a[<span class="nm">0</span>])    <span class="op"># 10</span>
+<span class="fn">print</span>(a[<span class="nm">2</span>])    <span class="op"># 30</span>
+<span class="fn">print</span>(a[-<span class="nm">1</span>])   <span class="op"># 50  (last element)</span>
+<span class="fn">print</span>(a[-<span class="nm">2</span>])   <span class="op"># 40</span></pre>
+    </div>
+
+    <h3>1D Array Slicing</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>])
+
+<span class="cm"># a[start:stop:step]  → stop is EXCLUDED</span>
+<span class="fn">print</span>(a[<span class="nm">1</span>:<span class="nm">4</span>])     <span class="op"># [20 30 40]</span>
+<span class="fn">print</span>(a[:<span class="nm">3</span>])      <span class="op"># [10 20 30]   (from beginning)</span>
+<span class="fn">print</span>(a[<span class="nm">2</span>:])      <span class="op"># [30 40 50]   (to end)</span>
+<span class="fn">print</span>(a[:])       <span class="op"># [10 20 30 40 50] (entire array)</span>
+<span class="fn">print</span>(a[::<span class="nm">2</span>])     <span class="op"># [10 30 50]   (every 2nd element)</span>
+<span class="fn">print</span>(a[::-<span class="nm">1</span>])    <span class="op"># [50 40 30 20 10] (reversed)</span></pre>
+    </div>
+
+    <h3>2D Array Indexing &amp; Slicing</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>m = np.<span class="fn">array</span>([[<span class="nm">1</span>,  <span class="nm">2</span>,  <span class="nm">3</span>,  <span class="nm">4</span>],
+               [<span class="nm">5</span>,  <span class="nm">6</span>,  <span class="nm">7</span>,  <span class="nm">8</span>],
+               [<span class="nm">9</span>, <span class="nm">10</span>, <span class="nm">11</span>, <span class="nm">12</span>]])
+
+<span class="cm"># m[row, column]</span>
+<span class="fn">print</span>(m[<span class="nm">0</span>, <span class="nm">0</span>])    <span class="op"># 1    (row 0, col 0)</span>
+<span class="fn">print</span>(m[<span class="nm">1</span>, <span class="nm">2</span>])    <span class="op"># 7    (row 1, col 2)</span>
+<span class="fn">print</span>(m[-<span class="nm">1</span>, -<span class="nm">1</span>])  <span class="op"># 12   (last row, last col)</span>
+
+<span class="cm"># Selecting rows</span>
+<span class="fn">print</span>(m[<span class="nm">0</span>])       <span class="op"># [1 2 3 4]     (entire row 0)</span>
+<span class="fn">print</span>(m[<span class="nm">1</span>:<span class="nm">3</span>])     <span class="op"># rows 1 and 2</span>
+
+<span class="cm"># Selecting columns</span>
+<span class="fn">print</span>(m[:, <span class="nm">1</span>])    <span class="op"># [ 2  6 10]   (all rows, col 1)</span>
+<span class="fn">print</span>(m[:, <span class="nm">1</span>:<span class="nm">3</span>])  <span class="op"># all rows, cols 1-2</span>
+
+<span class="cm"># Sub-matrix</span>
+<span class="fn">print</span>(m[<span class="nm">0</span>:<span class="nm">2</span>, <span class="nm">1</span>:<span class="nm">3</span>])
+<span class="op"># [[2 3]
+#  [6 7]]</span></pre>
+    </div>
+
+    <h3>Fancy Indexing (Advanced)</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>])
+
+<span class="cm"># Select multiple elements using list of indices</span>
+<span class="fn">print</span>(a[[<span class="nm">0</span>, <span class="nm">2</span>, <span class="nm">4</span>]])   <span class="op"># [10 30 50]</span>
+
+<span class="cm"># Boolean / condition-based indexing</span>
+mask = a > <span class="nm">25</span>
+<span class="fn">print</span>(mask)         <span class="op"># [False False  True  True  True]</span>
+<span class="fn">print</span>(a[mask])      <span class="op"># [30 40 50]</span>
+<span class="fn">print</span>(a[a % <span class="nm">20</span> == <span class="nm">0</span>])  <span class="op"># [20 40]  (divisible by 20)</span></pre>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <p><strong>Important:</strong> NumPy slices create <strong>views</strong>, not copies! Modifying a slice modifies the original array. Use <code>.copy()</code> if you need an independent copy: <code>b = a[1:4].copy()</code></p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 6 ═══════════════ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>Reshaping, Flattening &amp; Stacking</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Reshaping Arrays</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">13</span>)     <span class="cm"># [1 2 3 4 5 6 7 8 9 10 11 12]</span>
+<span class="fn">print</span>(a.shape)            <span class="op"># (12,)</span>
+
+<span class="cm"># Reshape to 2D: 3 rows × 4 columns</span>
+b = a.<span class="fn">reshape</span>(<span class="nm">3</span>, <span class="nm">4</span>)
+<span class="fn">print</span>(b)
+<span class="cm"># [[ 1  2  3  4]
+#  [ 5  6  7  8]
+#  [ 9 10 11 12]]</span>
+
+<span class="cm"># Reshape to 3D</span>
+c = a.<span class="fn">reshape</span>(<span class="nm">2</span>, <span class="nm">2</span>, <span class="nm">3</span>)
+<span class="fn">print</span>(c.shape)            <span class="op"># (2, 2, 3)</span>
+
+<span class="cm"># Use -1 to let NumPy auto-calculate one dimension</span>
+d = a.<span class="fn">reshape</span>(-<span class="nm">1</span>, <span class="nm">4</span>)      <span class="cm"># NumPy figures out rows = 3</span>
+<span class="fn">print</span>(d.shape)            <span class="op"># (3, 4)</span>
+
+e = a.<span class="fn">reshape</span>(<span class="nm">3</span>, -<span class="nm">1</span>)      <span class="cm"># NumPy figures out cols = 4</span>
+<span class="fn">print</span>(e.shape)            <span class="op"># (3, 4)</span></pre>
+    </div>
+
+    <h3>Flattening</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>m = np.<span class="fn">array</span>([[<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>],[<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>]])
+
+<span class="cm"># flatten() → returns a COPY (safe to modify)</span>
+f = m.<span class="fn">flatten</span>()
+<span class="fn">print</span>(f)    <span class="op"># [1 2 3 4 5 6]</span>
+
+<span class="cm"># ravel() → returns a VIEW (faster, but careful)</span>
+r = m.<span class="fn">ravel</span>()
+<span class="fn">print</span>(r)    <span class="op"># [1 2 3 4 5 6]</span>
+
+<span class="cm"># reshape(-1) → same as ravel</span>
+<span class="fn">print</span>(m.<span class="fn">reshape</span>(-<span class="nm">1</span>))   <span class="op"># [1 2 3 4 5 6]</span></pre>
+    </div>
+
+    <h3>Transpose</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>m = np.<span class="fn">array</span>([[<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>],[<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>]])  <span class="cm"># shape (2, 3)</span>
+
+t = m.<span class="fn">T</span>                    <span class="cm"># or m.transpose()</span>
+<span class="fn">print</span>(t)
+<span class="cm"># [[1 4]
+#  [2 5]
+#  [3 6]]</span>
+<span class="fn">print</span>(t.shape)             <span class="op"># (3, 2)  ← rows and cols swapped</span></pre>
+    </div>
+
+    <h3>Stacking Arrays</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+b = np.<span class="fn">array</span>([<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>])
+
+<span class="cm"># vstack → stack vertically (row-wise)</span>
+v = np.<span class="fn">vstack</span>([a, b])
+<span class="fn">print</span>(v)      <span class="op"># [[1 2 3] [4 5 6]] → shape (2, 3)</span>
+
+<span class="cm"># hstack → stack horizontally (column-wise)</span>
+h = np.<span class="fn">hstack</span>([a, b])
+<span class="fn">print</span>(h)      <span class="op"># [1 2 3 4 5 6] → shape (6,)</span>
+
+<span class="cm"># concatenate – flexible along any axis</span>
+m1 = np.<span class="fn">array</span>([[<span class="nm">1</span>,<span class="nm">2</span>],[<span class="nm">3</span>,<span class="nm">4</span>]])
+m2 = np.<span class="fn">array</span>([[<span class="nm">5</span>,<span class="nm">6</span>],[<span class="nm">7</span>,<span class="nm">8</span>]])
+
+np.<span class="fn">concatenate</span>([m1, m2], axis=<span class="nm">0</span>)  <span class="op"># along rows (4 rows × 2 cols)</span>
+np.<span class="fn">concatenate</span>([m1, m2], axis=<span class="nm">1</span>)  <span class="op"># along cols (2 rows × 4 cols)</span>
+
+<span class="cm"># split → divide into sub-arrays</span>
+arr = np.<span class="fn">arange</span>(<span class="nm">12</span>)
+parts = np.<span class="fn">split</span>(arr, <span class="nm">3</span>)  <span class="cm"># into 3 equal parts</span>
+<span class="fn">print</span>(parts)  <span class="op"># [array([0,1,2,3]), array([4,5,6,7]), array([8,9,10,11])]</span></pre>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🎯</div>
+      <p>In deep learning, <strong>reshape</strong> and <strong>transpose</strong> are used constantly — e.g., reshaping a flat pixel vector to a 28×28 image, or transposing weight matrices during backpropagation.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 7 ═══════════════ -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>Mathematical Operations &amp; Broadcasting</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Element-wise Arithmetic</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>])
+b = np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+
+<span class="fn">print</span>(a + b)    <span class="op"># [11 22 33]</span>
+<span class="fn">print</span>(a - b)    <span class="op"># [ 9 18 27]</span>
+<span class="fn">print</span>(a * b)    <span class="op"># [10 40 90]</span>
+<span class="fn">print</span>(a / b)    <span class="op"># [10. 10. 10.]</span>
+<span class="fn">print</span>(a ** <span class="nm">2</span>)   <span class="op"># [100 400 900]  (squaring)</span>
+<span class="fn">print</span>(a % <span class="nm">3</span>)    <span class="op"># [1 2 0]        (modulo)</span>
+<span class="fn">print</span>(a // <span class="nm">3</span>)   <span class="op"># [3 6 10]       (floor division)</span></pre>
+    </div>
+
+    <h3>Universal Functions (ufuncs)</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">9</span>, <span class="nm">16</span>])
+
+np.<span class="fn">sqrt</span>(a)       <span class="op"># [1. 2. 3. 4.]</span>
+np.<span class="fn">square</span>(a)     <span class="op"># [  1  16  81 256]</span>
+np.<span class="fn">exp</span>(a)        <span class="op"># e^x for each element</span>
+np.<span class="fn">log</span>(a)        <span class="op"># natural log</span>
+np.<span class="fn">log2</span>(a)       <span class="op"># log base 2</span>
+np.<span class="fn">log10</span>(a)      <span class="op"># log base 10</span>
+np.<span class="fn">abs</span>([-<span class="nm">3</span>, -<span class="nm">1</span>, <span class="nm">2</span>])  <span class="op"># [3 1 2]</span>
+np.<span class="fn">floor</span>([<span class="nm">1.7</span>, <span class="nm">2.3</span>]) <span class="op"># [1. 2.]</span>
+np.<span class="fn">ceil</span>([<span class="nm">1.2</span>, <span class="nm">2.8</span>])  <span class="op"># [2. 3.]</span>
+np.<span class="fn">round</span>([<span class="nm">1.5</span>, <span class="nm">2.4</span>]) <span class="op"># [2. 2.]</span>
+
+<span class="cm"># Trigonometry</span>
+angles = np.<span class="fn">array</span>([<span class="nm">0</span>, np.pi/<span class="nm">2</span>, np.pi])
+np.<span class="fn">sin</span>(angles)   <span class="op"># [0.0, 1.0, 0.0]</span>
+np.<span class="fn">cos</span>(angles)   <span class="op"># [1.0, 0.0, -1.0]</span></pre>
+    </div>
+
+    <h3>Broadcasting – The Most Powerful Feature</h3>
+    <p>Broadcasting allows NumPy to perform operations between arrays of <strong>different shapes</strong> by automatically "stretching" the smaller array.</p>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># Scalar + Array → scalar broadcasts to all elements</span>
+a = np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+<span class="fn">print</span>(a + <span class="nm">10</span>)    <span class="op"># [11 12 13]  (10 added to every element)</span>
+<span class="fn">print</span>(a * <span class="nm">2</span>)     <span class="op"># [2 4 6]</span>
+
+<span class="cm"># 2D array + 1D array (row broadcast)</span>
+m = np.<span class="fn">array</span>([[<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>],
+               [<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>]])
+v = np.<span class="fn">array</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>])    <span class="cm"># shape (3,)</span>
+<span class="fn">print</span>(m + v)
+<span class="cm"># [[11 22 33]   ← v added to EACH row
+#  [14 25 36]]</span>
+
+<span class="cm"># Column broadcast (need to reshape)</span>
+col = np.<span class="fn">array</span>([[<span class="nm">100</span>], [<span class="nm">200</span>]])  <span class="cm"># shape (2, 1)</span>
+<span class="fn">print</span>(m + col)
+<span class="cm"># [[101 102 103]   ← 100 added to entire row 0
+#  [204 205 206]]  ← 200 added to entire row 1</span></pre>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📐</div>
+      <p><strong>Broadcasting Rules:</strong> Two shapes are compatible if, going from right to left, each dimension is either equal or one of them is 1. Example: (3,4) and (1,4) → compatible; (3,4) and (3,1) → compatible; (3,4) and (4,3) → NOT compatible.</p>
+    </div>
+
+    <h3>Matrix Operations</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>A = np.<span class="fn">array</span>([[<span class="nm">1</span>,<span class="nm">2</span>],[<span class="nm">3</span>,<span class="nm">4</span>]])
+B = np.<span class="fn">array</span>([[<span class="nm">5</span>,<span class="nm">6</span>],[<span class="nm">7</span>,<span class="nm">8</span>]])
+
+<span class="cm"># Element-wise multiplication (NOT matrix multiply)</span>
+<span class="fn">print</span>(A * B)
+<span class="cm"># [[ 5 12]
+#  [21 32]]</span>
+
+<span class="cm"># Matrix multiplication (dot product)</span>
+<span class="fn">print</span>(np.<span class="fn">dot</span>(A, B))           <span class="cm"># or A @ B</span>
+<span class="cm"># [[19 22]
+#  [43 50]]</span>
+
+<span class="fn">print</span>(A @ B)                   <span class="cm"># Same as np.dot (Python 3.5+)</span>
+
+<span class="cm"># Sum across axes</span>
+m = np.<span class="fn">array</span>([[<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>],[<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>]])
+<span class="fn">print</span>(m.<span class="fn">sum</span>())          <span class="op"># 21       (all elements)</span>
+<span class="fn">print</span>(m.<span class="fn">sum</span>(axis=<span class="nm">0</span>))    <span class="op"># [5 7 9]  (sum each COLUMN)</span>
+<span class="fn">print</span>(m.<span class="fn">sum</span>(axis=<span class="nm">1</span>))    <span class="op"># [6 15]   (sum each ROW)</span></pre>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 8 ═══════════════ -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>Statistical Functions</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Descriptive Statistics</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>data = np.<span class="fn">array</span>([<span class="nm">4</span>, <span class="nm">7</span>, <span class="nm">2</span>, <span class="nm">9</span>, <span class="nm">1</span>, <span class="nm">5</span>, <span class="nm">8</span>, <span class="nm">3</span>, <span class="nm">6</span>, <span class="nm">10</span>])
+
+np.<span class="fn">min</span>(data)        <span class="op"># 1</span>
+np.<span class="fn">max</span>(data)        <span class="op"># 10</span>
+np.<span class="fn">sum</span>(data)        <span class="op"># 55</span>
+np.<span class="fn">mean</span>(data)       <span class="op"># 5.5   (average)</span>
+np.<span class="fn">median</span>(data)     <span class="op"># 5.5   (middle value when sorted)</span>
+np.<span class="fn">std</span>(data)        <span class="op"># std deviation ≈ 2.87</span>
+np.<span class="fn">var</span>(data)        <span class="op"># variance ≈ 8.25</span>
+np.<span class="fn">percentile</span>(data, <span class="nm">25</span>)  <span class="op"># 3.25  (Q1)</span>
+np.<span class="fn">percentile</span>(data, <span class="nm">75</span>)  <span class="op"># 7.75  (Q3)</span>
+
+<span class="cm"># Index of min and max</span>
+np.<span class="fn">argmin</span>(data)     <span class="op"># 4   (index of minimum value 1)</span>
+np.<span class="fn">argmax</span>(data)     <span class="op"># 9   (index of maximum value 10)</span>
+
+<span class="cm"># Cumulative sum and product</span>
+np.<span class="fn">cumsum</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>])   <span class="op"># [ 1  3  6 10]</span>
+np.<span class="fn">cumprod</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>])  <span class="op"># [ 1  2  6 24]</span></pre>
+    </div>
+
+    <h3>Statistics on 2D Arrays (with Axis)</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>marks = np.<span class="fn">array</span>([[<span class="nm">85</span>, <span class="nm">90</span>, <span class="nm">78</span>],   <span class="cm"># Student 1</span>
+                   [<span class="nm">72</span>, <span class="nm">88</span>, <span class="nm">95</span>],   <span class="cm"># Student 2</span>
+                   [<span class="nm">60</span>, <span class="nm">75</span>, <span class="nm">80</span>]])  <span class="cm"># Student 3</span>
+
+<span class="cm"># Average marks per student (across subjects = axis=1)</span>
+<span class="fn">print</span>(np.<span class="fn">mean</span>(marks, axis=<span class="nm">1</span>))   <span class="op"># [84.33 85.   71.67]</span>
+
+<span class="cm"># Average per subject (across students = axis=0)</span>
+<span class="fn">print</span>(np.<span class="fn">mean</span>(marks, axis=<span class="nm">0</span>))   <span class="op"># [72.33 84.33 84.33]</span>
+
+<span class="cm"># Best student per subject</span>
+<span class="fn">print</span>(np.<span class="fn">argmax</span>(marks, axis=<span class="nm">0</span>)) <span class="op"># [0 0 1]</span></pre>
+    </div>
+
+    <div class="callout good">
+      <div class="callout-icon">🤖</div>
+      <p><strong>AI/ML Importance:</strong> These functions are the backbone of data preprocessing. Mean and std are used for <strong>normalization</strong>: <code>normalized = (data - np.mean(data)) / np.std(data)</code>. This is one of the most common steps before feeding data to any ML model.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 9 ═══════════════ -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>Sorting, Searching &amp; Filtering</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Sorting</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">1</span>, <span class="nm">5</span>, <span class="nm">9</span>, <span class="nm">2</span>, <span class="nm">6</span>])
+
+<span class="cm"># sort() → returns new sorted array (ascending)</span>
+<span class="fn">print</span>(np.<span class="fn">sort</span>(a))           <span class="op"># [1 1 2 3 4 5 6 9]</span>
+
+<span class="cm"># Descending sort</span>
+<span class="fn">print</span>(np.<span class="fn">sort</span>(a)[::-<span class="nm">1</span>])     <span class="op"># [9 6 5 4 3 2 1 1]</span>
+
+<span class="cm"># argsort() → returns INDICES that would sort the array</span>
+idx = np.<span class="fn">argsort</span>(a)
+<span class="fn">print</span>(idx)    <span class="op"># [1 3 6 0 2 4 7 5]</span>
+<span class="fn">print</span>(a[idx]) <span class="op"># [1 1 2 3 4 5 6 9]  ← sorted</span>
+
+<span class="cm"># Sort 2D array along rows or columns</span>
+m = np.<span class="fn">array</span>([[<span class="nm">3</span>,<span class="nm">1</span>,<span class="nm">2</span>],[<span class="nm">9</span>,<span class="nm">7</span>,<span class="nm">8</span>]])
+np.<span class="fn">sort</span>(m, axis=<span class="nm">1</span>)   <span class="op"># sort each row</span>
+np.<span class="fn">sort</span>(m, axis=<span class="nm">0</span>)   <span class="op"># sort each column</span></pre>
+    </div>
+
+    <h3>Searching</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>a = np.<span class="fn">array</span>([<span class="nm">10</span>, <span class="nm">25</span>, <span class="nm">5</span>, <span class="nm">40</span>, <span class="nm">15</span>, <span class="nm">30</span>])
+
+<span class="cm"># where() → returns INDICES where condition is True</span>
+idx = np.<span class="fn">where</span>(a > <span class="nm">20</span>)
+<span class="fn">print</span>(idx)         <span class="op"># (array([1, 3, 5]),)</span>
+<span class="fn">print</span>(a[idx])      <span class="op"># [25 40 30]</span>
+
+<span class="cm"># where(condition, x, y) → replace True→x, False→y</span>
+result = np.<span class="fn">where</span>(a > <span class="nm">20</span>, a, <span class="nm">0</span>)
+<span class="fn">print</span>(result)      <span class="op"># [ 0 25  0 40  0 30]  (zeros where ≤ 20)</span>
+
+<span class="cm"># searchsorted → find insertion position</span>
+sorted_a = np.<span class="fn">sort</span>(a)
+<span class="fn">print</span>(np.<span class="fn">searchsorted</span>(sorted_a, <span class="nm">20</span>))   <span class="op"># 2</span></pre>
+    </div>
+
+    <h3>Boolean Masking &amp; Filtering</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre>scores = np.<span class="fn">array</span>([<span class="nm">85</span>, <span class="nm">42</span>, <span class="nm">93</span>, <span class="nm">61</span>, <span class="nm">77</span>, <span class="nm">55</span>, <span class="nm">88</span>])
+
+<span class="cm"># Filter: pass if score >= 60</span>
+passed = scores[scores >= <span class="nm">60</span>]
+<span class="fn">print</span>(passed)   <span class="op"># [85 93 61 77 88]</span>
+
+<span class="cm"># Multiple conditions with & (and), | (or), ~ (not)</span>
+mid = scores[(scores >= <span class="nm">60</span>) & (scores < <span class="nm">90</span>)]
+<span class="fn">print</span>(mid)      <span class="op"># [85 61 77 88]</span>
+
+fail_or_excel = scores[(scores < <span class="nm">60</span>) | (scores >= <span class="nm">90</span>)]
+<span class="fn">print</span>(fail_or_excel)   <span class="op"># [42 93]</span>
+
+<span class="cm"># Count how many passed</span>
+<span class="fn">print</span>(np.<span class="fn">sum</span>(scores >= <span class="nm">60</span>))   <span class="op"># 5</span>
+
+<span class="cm"># any() and all()</span>
+<span class="fn">print</span>(np.<span class="fn">any</span>(scores > <span class="nm">90</span>))    <span class="op"># True  (at least one > 90)</span>
+<span class="fn">print</span>(np.<span class="fn">all</span>(scores > <span class="nm">40</span>))    <span class="op"># True  (all > 40)</span></pre>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 10 ═══════════════ -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2>Random Module in NumPy</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Generating Random Numbers</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># Set seed for reproducibility (same result every run)</span>
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+
+<span class="cm"># Random floats between 0 and 1</span>
+np.random.<span class="fn">rand</span>(<span class="nm">3</span>)          <span class="op"># 1D: [0.37 0.95 0.73]</span>
+np.random.<span class="fn">rand</span>(<span class="nm">2</span>, <span class="nm">3</span>)       <span class="op"># 2D: 2 rows, 3 cols</span>
+
+<span class="cm"># Random integers</span>
+np.random.<span class="fn">randint</span>(<span class="nm">1</span>, <span class="nm">10</span>)           <span class="op"># single int: 1-9</span>
+np.random.<span class="fn">randint</span>(<span class="nm">1</span>, <span class="nm">100</span>, size=<span class="nm">5</span>)  <span class="op"># [37 12 72 9 75]</span>
+np.random.<span class="fn">randint</span>(<span class="nm">0</span>, <span class="nm">2</span>, size=(<span class="nm">3</span>,<span class="nm">3</span>))  <span class="op"># 3×3 matrix of 0s and 1s</span>
+
+<span class="cm"># Normal distribution (Gaussian): mean=0, std=1</span>
+np.random.<span class="fn">randn</span>(<span class="nm">5</span>)          <span class="op"># [-0.47  0.05  0.64  1.52 -0.23]</span>
+np.random.<span class="fn">normal</span>(<span class="nm">50</span>, <span class="nm">10</span>, <span class="nm">1000</span>)  <span class="op"># 1000 values, mean=50, std=10</span>
+
+<span class="cm"># Uniform distribution</span>
+np.random.<span class="fn">uniform</span>(<span class="nm">5</span>, <span class="nm">15</span>, size=<span class="nm">4</span>)   <span class="op"># random floats between 5 and 15</span>
+
+<span class="cm"># Random choice from array</span>
+choices = np.<span class="fn">array</span>([<span class="st">'Red'</span>, <span class="st">'Green'</span>, <span class="st">'Blue'</span>])
+np.random.<span class="fn">choice</span>(choices, size=<span class="nm">5</span>)   <span class="op"># ['Red', 'Blue', 'Red', 'Green', 'Red']</span>
+
+<span class="cm"># Shuffle in place</span>
+arr = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">11</span>)
+np.random.<span class="fn">shuffle</span>(arr)
+<span class="fn">print</span>(arr)   <span class="op"># shuffled version</span>
+
+<span class="cm"># Permutation (returns new shuffled array without modifying original)</span>
+p = np.random.<span class="fn">permutation</span>(arr)</pre>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔑</div>
+      <p><strong>np.random.seed()</strong> ensures your code produces the same random results every time — essential for reproducible AI/ML experiments. Always set a seed when sharing notebooks or training models.</p>
+    </div>
+
+    <h3>Modern API (NumPy 1.17+)</h3>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="cm"># Recommended newer API</span>
+rng = np.random.<span class="fn">default_rng</span>(seed=<span class="nm">42</span>)
+
+rng.<span class="fn">random</span>(<span class="nm">5</span>)                  <span class="op"># floats 0 to 1</span>
+rng.<span class="fn">integers</span>(<span class="nm">1</span>, <span class="nm">10</span>, size=<span class="nm">4</span>)    <span class="op"># integers 1-9</span>
+rng.<span class="fn">normal</span>(<span class="nm">0</span>, <span class="nm">1</span>, size=(<span class="nm">3</span>,<span class="nm">3</span>))    <span class="op"># 3×3 standard normal</span></pre>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 11 ═══════════════ -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <h2>Mini Projects – Applying NumPy</h2>
+  </div>
+  <div class="section-body">
+
+    <h3>Project 1 – Student Grade Analyzer</h3>
+    <div class="project-box">
+      <h4>🎓 Analyze marks of students across subjects</h4>
+      <p>Concepts used: 2D arrays, axis-wise stats, boolean masking, argsort</p>
+    </div>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Marks: 5 students × 4 subjects</span>
+marks = np.<span class="fn">array</span>([
+    [<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">78</span>, <span class="nm">88</span>],   <span class="cm"># Alice</span>
+    [<span class="nm">72</span>, <span class="nm">65</span>, <span class="nm">80</span>, <span class="nm">70</span>],   <span class="cm"># Bob</span>
+    [<span class="nm">90</span>, <span class="nm">95</span>, <span class="nm">92</span>, <span class="nm">96</span>],   <span class="cm"># Charlie</span>
+    [<span class="nm">55</span>, <span class="nm">60</span>, <span class="nm">58</span>, <span class="nm">62</span>],   <span class="cm"># Diana</span>
+    [<span class="nm">78</span>, <span class="nm">82</span>, <span class="nm">75</span>, <span class="nm">80</span>],   <span class="cm"># Eve</span>
+])
+students = [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>, <span class="st">'Diana'</span>, <span class="st">'Eve'</span>]
+
+<span class="cm"># 1. Average marks per student</span>
+avg = np.<span class="fn">mean</span>(marks, axis=<span class="nm">1</span>)
+<span class="fn">print</span>(<span class="st">"Average per student:"</span>, avg)
+<span class="cm"># [85.75 71.75 93.25 58.75 78.75]</span>
+
+<span class="cm"># 2. Top scorer</span>
+best_idx = np.<span class="fn">argmax</span>(avg)
+<span class="fn">print</span>(<span class="st">f"Top student: {students[best_idx]} ({avg[best_idx]:.1f})"</span>)
+<span class="cm"># Top student: Charlie (93.2)</span>
+
+<span class="cm"># 3. Students who passed (avg >= 65)</span>
+passed = [students[i] <span class="kw">for</span> i <span class="kw">in</span> np.<span class="fn">where</span>(avg >= <span class="nm">65</span>)[<span class="nm">0</span>]]
+<span class="fn">print</span>(<span class="st">"Passed:"</span>, passed)
+<span class="cm"># ['Alice', 'Bob', 'Charlie', 'Eve']</span>
+
+<span class="cm"># 4. Subject-wise average</span>
+subj_avg = np.<span class="fn">mean</span>(marks, axis=<span class="nm">0</span>)
+subjects = [<span class="st">'Math'</span>, <span class="st">'Science'</span>, <span class="st">'English'</span>, <span class="st">'History'</span>]
+<span class="kw">for</span> s, a <span class="kw">in</span> <span class="fn">zip</span>(subjects, subj_avg):
+    <span class="fn">print</span>(<span class="st">f"  {s}: {a:.1f}"</span>)
+
+<span class="cm"># 5. Rank students (highest avg first)</span>
+ranks = np.<span class="fn">argsort</span>(avg)[::-<span class="nm">1</span>]
+<span class="fn">print</span>(<span class="st">"Rankings:"</span>)
+<span class="kw">for</span> rank, idx <span class="kw">in</span> <span class="fn">enumerate</span>(ranks, <span class="nm">1</span>):
+    <span class="fn">print</span>(<span class="st">f"  {rank}. {students[idx]} - {avg[idx]:.1f}"</span>)
+
+<span class="cm"># 6. Normalize marks (for ML use)</span>
+normalized = (marks - np.<span class="fn">mean</span>(marks)) / np.<span class="fn">std</span>(marks)
+<span class="fn">print</span>(<span class="st">"Normalized marks (first row):"</span>, normalized[<span class="nm">0</span>])</pre>
+    </div>
+
+    <h3>Project 2 – Sales Data Analyzer</h3>
+    <div class="project-box">
+      <h4>📊 Monthly sales analysis for a store</h4>
+      <p>Concepts used: arange, broadcasting, statistics, filtering, cumsum</p>
+    </div>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+
+<span class="cm"># Monthly sales for 3 products over 12 months (in thousands)</span>
+sales = np.random.<span class="fn">randint</span>(<span class="nm">50</span>, <span class="nm">300</span>, size=(<span class="nm">3</span>, <span class="nm">12</span>))
+products = [<span class="st">'Product A'</span>, <span class="st">'Product B'</span>, <span class="st">'Product C'</span>]
+months = [<span class="st">'Jan'</span>,<span class="st">'Feb'</span>,<span class="st">'Mar'</span>,<span class="st">'Apr'</span>,<span class="st">'May'</span>,<span class="st">'Jun'</span>,
+          <span class="st">'Jul'</span>,<span class="st">'Aug'</span>,<span class="st">'Sep'</span>,<span class="st">'Oct'</span>,<span class="st">'Nov'</span>,<span class="st">'Dec'</span>]
+
+<span class="cm"># Total annual revenue per product</span>
+annual = np.<span class="fn">sum</span>(sales, axis=<span class="nm">1</span>)
+<span class="kw">for</span> p, r <span class="kw">in</span> <span class="fn">zip</span>(products, annual):
+    <span class="fn">print</span>(<span class="st">f"{p}: ₹{r}K"</span>)
+
+<span class="cm"># Best month overall</span>
+total_by_month = np.<span class="fn">sum</span>(sales, axis=<span class="nm">0</span>)
+best_month = np.<span class="fn">argmax</span>(total_by_month)
+<span class="fn">print</span>(<span class="st">f"Best month: {months[best_month]}"</span>)
+
+<span class="cm"># Cumulative sales of Product A</span>
+cum = np.<span class="fn">cumsum</span>(sales[<span class="nm">0</span>])
+<span class="fn">print</span>(<span class="st">"Cumulative Product A:"</span>, cum)
+
+<span class="cm"># Months where each product sold > 200K</span>
+high = np.<span class="fn">where</span>(sales > <span class="nm">200</span>)
+<span class="fn">print</span>(<span class="st">f"High sales months count: {len(high[0])}"</span>)
+
+<span class="cm"># Apply 10% tax on all sales</span>
+after_tax = sales * <span class="nm">0.90</span>
+
+<span class="cm"># Quarter-wise grouping using reshape</span>
+quarterly = sales.<span class="fn">reshape</span>(<span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">3</span>).<span class="fn">sum</span>(axis=<span class="nm">2</span>)
+<span class="fn">print</span>(<span class="st">"Quarterly totals shape:"</span>, quarterly.shape)  <span class="op"># (3, 4)</span></pre>
+    </div>
+
+    <h3>Project 3 – Image Pixel Operations (Intro to Computer Vision)</h3>
+    <div class="project-box">
+      <h4>🖼️ Grayscale image manipulation with NumPy arrays</h4>
+      <p>Concepts used: 2D arrays, slicing, broadcasting, clipping, normalization</p>
+    </div>
+    <div class="code-block">
+      <div class="code-label">python</div>
+      <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Simulate an 8×8 grayscale image (pixel values 0-255)</span>
+np.random.<span class="fn">seed</span>(<span class="nm">0</span>)
+image = np.random.<span class="fn">randint</span>(<span class="nm">0</span>, <span class="nm">256</span>, size=(<span class="nm">8</span>, <span class="nm">8</span>), dtype=<span class="st">'uint8'</span>)
+<span class="fn">print</span>(<span class="st">"Original image:\n"</span>, image)
+
+<span class="cm"># 1. Normalize to 0–1 range (for neural networks)</span>
+normalized = image / <span class="nm">255.0</span>
+
+<span class="cm"># 2. Crop a 4×4 region (top-left)</span>
+crop = image[:<span class="nm">4</span>, :<span class="nm">4</span>]
+
+<span class="cm"># 3. Brighten image (add 50 to all pixels, clip at 255)</span>
+bright = np.<span class="fn">clip</span>(image.<span class="fn">astype</span>(<span class="st">'int32'</span>) + <span class="nm">50</span>, <span class="nm">0</span>, <span class="nm">255</span>).<span class="fn">astype</span>(<span class="st">'uint8'</span>)
+
+<span class="cm"># 4. Flip image horizontally</span>
+flipped = image[:, ::-<span class="nm">1</span>]
+
+<span class="cm"># 5. Rotate 90 degrees</span>
+rotated = np.<span class="fn">rot90</span>(image)
+
+<span class="cm"># 6. Average pixel value</span>
+<span class="fn">print</span>(<span class="st">f"Mean pixel value: {np.mean(image):.1f}"</span>)
+<span class="fn">print</span>(<span class="st">f"Dark pixels (< 128): {np.sum(image < 128)}"</span>)
+<span class="fn">print</span>(<span class="st">f"Image shape: {image.shape}, dtype: {image.dtype}"</span>)
+
+<span class="cm"># 7. Flatten for ML input</span>
+flat = image.<span class="fn">flatten</span>()   <span class="cm"># shape (64,) — ready for a neural network input</span>
+<span class="fn">print</span>(<span class="st">"Flattened shape:"</span>, flat.shape)</pre>
+    </div>
+
+    <h3>Quick Reference: Most Used NumPy Functions</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Function</th><th>Purpose</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>np.array()</code></td><td>Create array</td><td><code>np.array([1,2,3])</code></td></tr>
+          <tr><td><code>np.arange()</code></td><td>Range array</td><td><code>np.arange(0,10,2)</code></td></tr>
+          <tr><td><code>np.linspace()</code></td><td>Evenly spaced</td><td><code>np.linspace(0,1,5)</code></td></tr>
+          <tr><td><code>np.zeros/ones/full</code></td><td>Initialize</td><td><code>np.zeros((3,3))</code></td></tr>
+          <tr><td><code>.reshape()</code></td><td>Change shape</td><td><code>a.reshape(3,4)</code></td></tr>
+          <tr><td><code>.flatten()</code></td><td>To 1D (copy)</td><td><code>m.flatten()</code></td></tr>
+          <tr><td><code>.T</code></td><td>Transpose</td><td><code>m.T</code></td></tr>
+          <tr><td><code>np.dot / @</code></td><td>Matrix multiply</td><td><code>A @ B</code></td></tr>
+          <tr><td><code>np.where()</code></td><td>Conditional filter</td><td><code>np.where(a>5)</code></td></tr>
+          <tr><td><code>np.sort/argsort</code></td><td>Sorting</td><td><code>np.argsort(a)</code></td></tr>
+          <tr><td><code>np.mean/std/var</code></td><td>Statistics</td><td><code>np.mean(a, axis=0)</code></td></tr>
+          <tr><td><code>np.random.seed</code></td><td>Reproducibility</td><td><code>np.random.seed(42)</code></td></tr>
+          <tr><td><code>np.vstack/hstack</code></td><td>Stack arrays</td><td><code>np.vstack([a,b])</code></td></tr>
+          <tr><td><code>np.clip()</code></td><td>Limit values</td><td><code>np.clip(a,0,255)</code></td></tr>
+          <tr><td><code>np.concatenate</code></td><td>Join arrays</td><td><code>np.concatenate([a,b],axis=0)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🚀</div>
+      <p><strong>Your Next Steps after NumPy:</strong> NumPy is the foundation. Once comfortable, move to: <strong>Pandas</strong> (tabular data) → <strong>Matplotlib/Seaborn</strong> (visualization) → <strong>Scikit-learn</strong> (ML algorithms) → <strong>TensorFlow/PyTorch</strong> (deep learning). All of these are built on NumPy!</p>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end container -->
+
+<div class="footer">
+  <p>Notes compiled from <span>Sir Saurabh Shukla's NumPy Playlist</span> – MySirG.com</p>
+  <p style="margin-top:8px;">"The best way to learn is to code along. Open your editor and run every example!" 🐍</p>
+</div>
+
+</body>
+</html>
