@@ -1,0 +1,112 @@
+# 🎓 Student Marks Analyzer
+
+A beginner-level data analysis project built using NumPy.
+This project analyzes marks of 5 students across 4 subjects
+and generates a complete grade report.
+
+---
+
+## 🎯 Project Goal
+Help a school understand student performance —
+who scored the highest, who passed, and how each
+subject performed overall.
+
+---
+
+## 📊 What This Project Does
+- Calculates average marks per student
+- Calculates average marks per subject
+- Finds the top scoring student
+- Filters pass and fail students
+- Ranks all students from highest to lowest
+
+---
+
+## 🛠️ Concepts & Functions Used
+
+| Function | Purpose |
+|----------|---------|
+| `np.array()` | Create 2D array of student marks |
+| `np.mean(axis=1)` | Calculate average per student (row wise) |
+| `np.mean(axis=0)` | Calculate average per subject (column wise) |
+| `np.argmax()` | Find index of top scoring student |
+| `np.where()` | Filter pass and fail students |
+| `np.argsort()[::-1]` | Rank students from highest to lowest |
+
+---
+
+## 🗂️ Project Structure
+
+```
+project1-student-marks/
+│
+├── student_marks_analyzer.py   ← main project file
+└── README.md                   ← project description
+```
+
+---
+
+## ▶️ How to Run
+
+```bash
+# Install NumPy
+pip install numpy
+
+# Run the project
+python student_marks_analyzer.py
+```
+
+---
+
+## 📋 Sample Output
+
+```
+========================================
+        STUDENT MARKS ANALYZER
+========================================
+Student wise Average:
+  Ali     : 85.8
+  Sara    : 71.8
+  Ahmed   : 93.3
+  Zara    : 58.8
+  Usman   : 78.8
+----------------------------------------
+Subject wise Average:
+  Math    : 76.0
+  Science : 78.8
+  English : 76.6
+  History : 79.2
+----------------------------------------
+Top Scorer: Ahmed → 93.3
+----------------------------------------
+Pass Students (avg >= 65):
+  ✅ Ali     → 85.8
+  ✅ Sara    → 71.8
+  ✅ Ahmed   → 93.3
+  ✅ Usman   → 78.8
+Fail Students:
+  ❌ Zara   → 58.8
+----------------------------------------
+Final Rankings:
+  Rank 1 → Ahmed → 93.3
+  Rank 2 → Ali   → 85.8
+  Rank 3 → Usman → 78.8
+  Rank 4 → Sara  → 71.8
+  Rank 5 → Zara  → 58.8
+========================================
+```
+
+---
+
+## 💡 What I Learned
+- How to work with 2D NumPy arrays
+- Difference between axis=0 and axis=1
+- How to filter data using np.where
+- How to rank data using np.argsort
+- How these concepts apply in real AI/ML workflows
+
+---
+
+## 👩‍💻 Author
+**Shabana Malik**
+Learning Data Science & AI — one project at a time 🚀
